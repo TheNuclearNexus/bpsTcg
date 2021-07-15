@@ -18,7 +18,7 @@ This is a trading card game inspired by mainly MTG & BoI
 ## I want to make my own cards, can I do that?
 ### Yes!
 **Disclaimer** In order to add your own cards you will need to compile the datapack/resourcepack yourself.
-The process is not difficult but people you are not tech literate may struggle
+The process is not difficult but people that are not tech literate may struggle
 
 1) Follow the steps 1 & 2 in ``Compiling the Source``
 2) Naviage to ``<project>/other``
@@ -32,5 +32,5 @@ process easier)
 ### Help with the python script
 1) You need to install [PIL](https://pypi.org/project/Pillow/)
 2) You may need to install curl, to find this out open a Terminal/Command Prompt and type ``curl``
-	a) If you get a message saying unknown command/applet, go [here](https://stackoverflow.com/a/16216825)
-	b) If you get a message asking for a ``Uri`` or another parameter, then you have curl!
+2a) 	If you get a message saying unknown command/applet, go [here](https://stackoverflow.com/a/16216825)
+2b) 	If you get a message asking for a ``Uri`` or another parameter, then you have curl!
