@@ -15,6 +15,9 @@ This is a trading card game inspired by mainly MTG & BoI
 4) Navigate to ``.minecraft/saves/<world you want to use>`` and put ``bpsTcg-datapck.zip`` (or ``bpsTcg`` if you compiled it) in the datapacks folder
 5) Enter the world you want to use and type ``/reload`` a ``Loaded!`` message should appear in the game's chat window
 6) Lastly, enable the resourcepack from the ``Resourcepacks`` tab in settings
+### How do I play?
+- Check the wiki found [here](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+
 ## I want to make my own cards, can I do that?
 ### Yes!
 **Disclaimer** In order to add your own cards you will need to compile the datapack/resourcepack yourself.
