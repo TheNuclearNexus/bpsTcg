@@ -1,0 +1,86 @@
+for(var o = 0; o < 4; o++) {
+    if score @s bps.data matches $o function ${Reflection.getWritingFile().resolve("page_" + o)} {
+        for(var i = 0; i < 3; i++) {
+            for(var s = 2; s < 9; s++) {
+                var slot = ((i*9) + s)
+                var table = o*24 + ((s-2) + (i*9))
+                if data storage bps_tcg:table active[$table] unless data block ~ ~ ~ Items[{Slot:${(tag_byte)slot}}].tag.gui function ${Reflection.getWritingFile().resolve("click_" + table)} {
+                    set temp->bps.data = @s->bps.id
+                    as @a[distance=..5] if score temp bps.data = @s bps.id function {
+                        clear @s #nexus:all{gui:1b}
+                        playsound minecraft:ui.button.click master @s
+                    }
+                    
+                    function ${resource<bps_tcg:gui/table/display_active_tables>.resolve("page_" + o).resolve("set_" + table)}
+                    store result score temp bps.data data get block ~ ~ ~ Items[{Slot:${(tag_byte)slot}}].tag.bps_tcg.id
+                    
+                    unless score temp bps.data = @s bps.id function ${Reflection.getWritingFile().resolve("try_battle")} {
+                        
+                        eval ArrayUtil.get(pointer<temp->bps.data>, pointer<@s.ArmorItems[0].tag.bps_tcg.incoming>)
+                        
+                        unless data storage bps_tcg:temp out function ${Reflection.getWritingFile().resolve("send_request")} {
+                            set bps_tcg:table~temp = {id:0}
+                            store result storage bps_tcg:table temp.id int 1 scoreboard players get @s bps.id
+                            
+                            set bps_tcg:table~temp1 = @s.ArmorItems[0].tag.bps_tcg.name
+                            
+                            as @e[tag=bps.gui,tag=bps.open,type=minecraft:armor_stand] if score @s bps.id = temp bps.data at @s function {
+                                data modify entity @s ArmorItems[0].tag.bps_tcg.incoming append from storage bps_tcg:table temp
+                                
+                                as @a[distance=..5] if score @s bps.id = temp bps.data tellraw @s [{"translate":"bps_tcg.battle_request", "color":"gold", "with":[{"nbt":"temp1","storage":"bps_tcg:table","color":"white"}]}]
+                            }   
+                            
+                            store result storage bps_tcg:table temp.id int 1 data get block ~ ~ ~ Items[{Slot:${(tag_byte)slot}}].tag.bps_tcg.id
+                            data modify entity @s ArmorItems[0].tag.bps_tcg.outgoing append from storage bps_tcg:table temp
+                        } 
+                        if data storage bps_tcg:temp out function ${Reflection.getWritingFile().resolve("accept_request")} {
+                            store result score temp bps.data data get storage bps_tcg:temp out.id
+                            set @s.ArmorItems[0].tag.bps_tcg.duel.target = bps_tcg:temp~out.id
+                            set temp1->bps.data = @s->bps.id
+                            
+                            set bps_tcg:table~temp1 = @s.ArmorItems[0].tag.bps_tcg.name
+                            
+                            
+                            set suc->bps.data = 0
+                            as @e[tag=bps.gui,tag=bps.open,type=minecraft:armor_stand] if score @s bps.id = temp bps.data at @s function {
+                                eval ArrayUtil.get(pointer<temp1->bps.data>, pointer<@s.ArmorItems[0].tag.bps_tcg.outgoing>)
+                                
+                                
+                                if data storage bps_tcg:temp out function {
+                                    set suc->bps.data = 1
+                                    store result entity @s ArmorItems[0].tag.bps_tcg.duel.target int 1 scoreboard players get temp1 bps.data
+                                    
+                                    set temp->bps.data = @s->bps.id
+                                    as @a[distance=..5] if score @s bps.id = temp bps.data expand {
+                                        tellraw @s [{"translate":"bps_tcg.battle_accept", "color":"gold", "with":[{"nbt":"temp1","storage":"bps_tcg:table","color":"white"}]}]
+                                        tag @s add bps.battling
+                                    }
+                                    tag @s add bps.battling
+                                    tag @s add bps.battle.child
+                                    setblock ~ ~ ~ minecraft:barrier
+                                    function bps_tcg:gui/table/summon_field
+                                    eval tablePages.callOnExit()
+                                }
+                            }   
+                            if score suc bps.data matches 1 function {
+                                set temp1->bps.data = @s->bps.id
+                                as @a[distance=..5] if score @s bps.id = temp1 bps.data expand {
+                                    tag @s add bps.battling
+                                }
+                                tag @s add bps.battling
+                                tag @s add bps.battle.host
+                                
+                                set @s->bps.data = 0
+                                
+                                setblock ~ ~ ~ minecraft:barrier
+                                function bps_tcg:gui/table/summon_field
+                                eval tablePages.callOnExit()
+                                
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

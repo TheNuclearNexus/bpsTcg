@@ -1,0 +1,25 @@
+set in->bps.data = @s->bps.id
+function bps_tcg:player/data/get
+
+set bps_tcg:player~temp = bps_tcg:player~out
+
+
+for(var o = 0; o < 4; o++) {
+    if score @s bps.data matches $o function ${Reflection.getWritingFile().resolve("page_" + o)} {
+        for(var i = 0; i <= 14; i++) {
+            var slot : int = i
+            var p : int = (i+(15*o))
+            do if(slot >= 0) eval slot += 2
+            do if(slot >= 7) eval slot += 4
+            do if(slot >= 16) eval slot += 4
+            
+            replaceitem block ~ ~ ~ ${"container." + slot} minecraft:white_stained_glass_pane{gui:1b,display:{Name:'{"text":""}'}}
+            if data storage bps_tcg:player temp.deck[{d:${(tag_int)p}}] function ${Reflection.getWritingFile().resolve("set_" + p)}{
+                replaceitem block ~ ~ ~ ${"container." + slot} clock{tag:{gui:1b}} 1
+                set (~ ~ ~).Items[{Slot:${(tag_byte)slot}}].tag.bps_tcg.id = bps_tcg:player~temp.deck[{d:${(tag_int)p}}].id
+                set (~ ~ ~).Items[{Slot:${(tag_byte)slot}}].tag = bps_tcg:player~temp.deck[{d:${(tag_int)p}}].tag
+                set (~ ~ ~).Items[{Slot:${(tag_byte)slot}}].tag.gui = 1b
+            }
+        }
+    }
+}

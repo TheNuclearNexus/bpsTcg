@@ -1,0 +1,53 @@
+@priority 10
+
+define function get {
+    var bst = function(low : int, high : int) {
+        do if(!debugBuild) {
+            var mid = (low + high) / 2
+            
+            do if(low == high) {
+                set bps_tcg:player~out = bps_tcg:player~data[{id:${(tag_int)low}}]
+            } else if(low + 1 == high) {
+                if score in bps.data matches $low set bps_tcg:player~out = bps_tcg:player~data[{id:${(tag_int)low}}]
+                if score in bps.data matches $high set bps_tcg:player~out = bps_tcg:player~data[{id:${(tag_int)(low + 1)}}]
+            } else {
+                if score in bps.data matches $low..$mid function ${Reflection.getCurrentFile().resolve((string)low + "_" + (string)mid)} {eval bst(low, mid)}
+                if score in bps.data matches ${mid+1}..$high function ${Reflection.getCurrentFile().resolve((string)(mid+1) + "_" + (string)high)} {eval bst(mid+1, high)}
+            }
+        } else {
+            for(low; low <= high; low++) {
+                if score in bps.data matches $low set bps_tcg:player~out = bps_tcg:player~data[{id:${(tag_int)low}}]
+            }
+        }
+    }
+    #> input: in->bps.data
+    #> output: bps_tcg:player~out
+    
+    eval bst(0, 1024)
+}
+
+define function set {
+    var bst = function(low : int, high : int) {
+        do if(!debugBuild) {
+            var mid = (low + high) / 2
+            
+            do if(low == high) {
+                set bps_tcg:player~data[{id:${(tag_int)low}}] = bps_tcg:player~in 
+            } else if(low + 1 == high) {
+                if score in bps.data matches $low set bps_tcg:player~data[{id:${(tag_int)low}}] = bps_tcg:player~in 
+                if score in bps.data matches $high set bps_tcg:player~data[{id:${(tag_int)(low + 1)}}] = bps_tcg:player~in 
+            } else {
+                if score in bps.data matches $low..$mid function ${Reflection.getCurrentFile().resolve((string)low + "_" + (string)mid)} {eval bst(low, mid)}
+                if score in bps.data matches ${mid+1}..$high function ${Reflection.getCurrentFile().resolve((string)(mid+1) + "_" + (string)high)} {eval bst(mid+1, high)}
+            }
+        } else {
+            for(low; low <= high; low++) {
+                if score in bps.data matches $low set bps_tcg:player~data[{id:${(tag_int)low}}] = bps_tcg:player~in 
+            }
+        }
+    }
+    #> input 1: in->bps.data (The id)
+    #> input 2: bps_tcg:player~in (The data)
+    
+    eval bst(0, 1024)
+}

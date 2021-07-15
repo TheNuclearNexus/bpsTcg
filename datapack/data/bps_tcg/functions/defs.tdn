@@ -1,0 +1,11 @@
+@priority 100
+@on compile
+
+global var debugBuild : boolean = true
+
+define objective bps.page
+define objective bps.data
+define objective bps.id
+define objective bps.open_time
+
+define objective bps.sneak minecraft.custom:minecraft.sneak_time

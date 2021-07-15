@@ -1,0 +1,88 @@
+@require bps_tcg:gui/table/battle_logic
+
+advancement revoke @s only bps_tcg:card_interact
+
+
+set temp->bps.data = @s->bps.id
+
+set sneak->bps.data = 0
+if entity @s[tag=bps.sneak] set sneak->bps.data = 1
+tag @s add curUser
+
+set phase->bps.data = 0
+
+var table : entity = entity<@e[tag=bps.gui,tag=curTable,type=minecraft:armor_stand]>
+var table2 : entity = entity<@e[tag=bps.gui,tag=enemTable,type=minecraft:armor_stand]>
+
+as @e[tag=bps.gui,tag=bps.battling,distance=..6] if score @s bps.id = temp bps.data function get_my_table {
+    if entity @s[tag=bps.battle.child] function as_child {
+        set temp1->bps.id = $duel.target
+        as @e[tag=bps.gui,tag=bps.battling,tag=bps.battle.host] if score @s bps.id = temp1 bps.id tag @s add curTable
+        tag @s add enemTable
+    }
+    if entity @s[tag=bps.battle.host] function as_host {
+        set temp1->bps.id = $duel.target
+        as @e[tag=bps.gui,tag=bps.battling,tag=bps.battle.child] if score @s bps.id = temp1 bps.id tag @s add enemTable
+        tag @s add curTable
+    }
+}    
+
+set temp->bps.data = @s->bps.id
+as $table function get_game_info {
+    set phase->bps.data = @s->bps.data
+    eval getPlayerData(pointer<temp->bps.data>)
+    for(t in ["Aquatic", "Hellish", "Undead", "Ender", "Terrestrial", "CUM"]) {
+        var cmd1 = "execute store result score land" + t[0] + " bps.data run data get storage " + tempData.target + " " + tempData.member + ".lands." + t.toLowerCase()[0]
+        var cmd2 = "execute store result score landT" + t[0] + " bps.data run data get storage " + tempData.target + " " + tempData.member + ".lands.t" + t[0]
+        /${cmd1}
+        /${cmd2}
+    }
+}
+
+
+set bps_tcg:temp~data = @s.SelectedItem
+
+set ourTurn->bps.data = 0
+if entity @s[tag=bps.curTurn] set ourTurn->bps.data = 1
+
+as @e[tag=bps.card_display,distance=..6,type=minecraft:armor_stand] unless data entity @s ArmorItems[3].tag function handle {
+    set @s.ArmorItems[3] = bps_tcg:temp~data
+    
+    
+    unless score @s bps.id = temp bps.data function not_owned {
+        say you don't own me!
+    }
+    if score @s bps.id = temp bps.data function owned {
+        if entity @s[tag=bps.quit] function quit {
+            as $table at @s function bps_tcg:gui/table/quit_battle
+        }
+        if score phase bps.data matches 5 function bps_tcg:player/card_interactions/end_phase
+        if score phase bps.data matches 4 function bps_tcg:player/card_interactions/post_phase
+        if score phase bps.data matches 3 function bps_tcg:player/card_interactions/combat_phase
+        if score phase bps.data matches 2 function bps_tcg:player/card_interactions/main_phase
+        if score phase bps.data matches 1 function bps_tcg:player/card_interactions/start_phase
+        if score phase bps.data matches ..0 function bps_tcg:player/card_interactions/start_phase
+    }
+    
+}
+
+
+replaceitem entity @s weapon.mainhand air
+
+set temp->bps.data = @s->bps.id
+as $table function set_game_info {
+    set @s->bps.data = phase->bps.data
+    eval getPlayerData(pointer<temp->bps.data>)
+    
+    for(t in ["Aquatic", "Hellish", "Undead", "Ender", "Terrestrial", "CUM"]) {
+        var cmd1 = "execute store result storage " + tempData.target + " " + tempData.member + ".lands." + t.toLowerCase()[0] + " int 1 run scoreboard players get land" + t[0] + " bps.data"
+        var cmd2 = "execute store result storage " + tempData.target + " " + tempData.member + ".lands.t" + t[0] + " int 1 run scoreboard players get landT" + t[0] + " bps.data"
+        /${cmd1}
+        /${cmd2}
+    }
+    eval setPlayerData(pointer<temp->bps.data>)
+}
+
+tag @s remove curUser
+tag @e remove curTable
+tag @e remove enemTable

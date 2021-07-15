@@ -1,0 +1,11 @@
+define function hand {
+    loot replace entity @s weapon.mainhand loot bps_tcg:random
+    store result score out bps.data data get entity @s HandItems[0].tag.AttributeModifiers[0].Amount 2000000
+    replaceitem entity @s weapon.mainhand air
+    
+    set out->bps.data %= in->bps.data
+    
+    #check for 0 in
+    if score in bps.data matches 0 set out->bps.data = 0
+}
+

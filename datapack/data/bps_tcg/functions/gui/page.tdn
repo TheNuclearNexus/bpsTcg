@@ -1,0 +1,193 @@
+@on compile
+@require nexus:ncstd/collections
+
+define global class Element {
+    public var item : item
+    public var count : int
+    
+    public new(item : item, count : int) {
+        eval this.item = item
+        eval this.count = count
+    }
+}
+
+define global class Button : Element {
+    public var click : function?
+    
+    public new(item : item, count : int, click : function?) {
+        eval this.item = item
+        eval this.count = count
+        eval this.click = click
+    }
+}
+
+define global class Page {
+    public var elements : TypedDict<int, Element> = new TypedDict<int, Element>()
+    
+    public var show : resource
+    public var click : resource
+    
+    public var onRender : function?
+    public var onEnter : function? 
+    public var onExit : function?
+    
+    private var _uuid : int
+    
+    public uuid {
+        get : int {
+            return _uuid
+        }
+    }
+    
+    public new() {
+        eval _uuid = Random.PROJECT_RANDOM.nextInt()
+    }
+    
+    public add(slot : int, element : Element) {
+        do if(!elements.contains(slot)) {
+            eval elements.add(slot, element)
+        }
+    }
+    
+    public init(id : string) {
+        eval init(id, null)
+    }
+    public init(id : string, book) {
+        do if(book != null) {
+            eval book.add(id, this)
+        }
+        eval show = Reflection.getWritingFile().resolve(id + "/show")
+        eval click = Reflection.getWritingFile().resolve(id + "/click")
+    }
+    public generate(id : string) {
+        define function ${show} {
+            for(e in elements.keys) {
+                replaceitem block ~ ~ ~ ${"container." + e} ${elements[e].item} ${elements[e].count}
+            }
+            
+            do if(onRender != null)
+                eval onRender()
+        }
+
+        define function ${click} {
+            for(e in elements.keys) {
+                do if(elements[e] is Button && elements[e].click != null) {
+                    unless data storage bps_tcg:temp Items[{Slot:${(tag_byte)e}}] run function ${Reflection.getWritingFile().resolve("click_" + e)} {
+                        clear @a #nexus:all{gui:1b}
+                        set temp->bps.data = @s->bps.id
+                        as @a[distance=..5] if score temp bps.data = @s bps.id playsound minecraft:ui.button.click master @s
+                        eval elements[e].click()
+                    }
+                }
+            }
+        }
+
+    }
+    
+    public tick() {
+        set bps_tcg:temp~Items = (~ ~ ~).Items
+        /${"function " + show}
+        /${"function " + click}
+    }
+}
+
+define global class Book {
+    private var _pages : TypedDict<string, Page> = new TypedDict<string, Page>()
+    private var _curPage : string = ""
+    private var _onExit : resource
+    private var _onEnter : resource
+    
+    public new() {
+        eval _onExit = Reflection.getWritingFile().resolve("on_exit")
+        eval _onEnter = Reflection.getWritingFile().resolve("on_enter")
+    }
+    
+    public add(id : string, page : Page) {
+        do if(!_pages.contains(id)) {
+            eval _pages.add(id, page)
+        } else {
+            throw "Page '" + id + "' has already been added!"
+        }
+    }
+    
+    public showPage(id : string) {
+        /${"function " + _pages[id].show}
+    }
+    
+    public clickPage(id : string) {
+        /${"function " + _pages[id].click}
+    }
+    
+    public tickPage(id : string) {
+        eval _pages[id].tick()
+    }
+    
+    public getCurrentPage() : Page {
+        return _pages[_curPage]
+    }
+    
+    public getPage(id : string) : Page {
+        return _pages[id]
+    }
+    
+    public goToPage(id : string) {
+        eval goToPage(id, true)
+    }
+    
+    public callOnExit() {
+        /${"function " + _onExit}
+    }
+    public callOnEnter() {
+        /${"function " + _onEnter}
+    }
+    
+    public goToPage(id : string, triggerEvents : boolean) {
+        eval tablePages.callOnExit()
+        
+        set (~ ~ ~).Items = []
+        set @s->bps.page = ${_pages[id].uuid}
+        
+        eval _curPage = id
+        
+        eval tablePages.callOnEnter()
+        
+        eval showPage(id)
+    }
+    
+    public generatePageControls() {
+        for(p in _pages) {
+            eval p.value.generate(p.key)
+        }
+        for(p in _pages) {
+            if score @s bps.page matches ${p.value.uuid} function ${Reflection.getWritingFile().resolve("show_" + p.key)} {
+                eval p.value.tick()
+            }
+        }
+    }
+    
+    public generateEvents() {
+        define function $_onExit {
+            for(p in _pages) {
+                do if(p.value.onExit == null) {
+                    continue
+                }
+                if score @s bps.page matches ${p.value.uuid} function {
+                    eval p.value.onExit()
+                }
+            }
+        }
+        
+        define function $_onEnter {
+            for(p in _pages) {
+                do if(p.value.onEnter == null) {
+                    continue
+                }
+                if score @s bps.page matches ${p.value.uuid} function {
+                    eval p.value.onEnter()
+                }
+            }
+        }
+    }
+}
+
+global var tablePages : Book = new Book()

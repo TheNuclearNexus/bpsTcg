@@ -1,0 +1,20 @@
+@tag load
+
+tellraw @a [{"text":"Loaded!"}]
+
+unless data storage bps_tcg:player data set bps_tcg:player~data = []
+unless score GlobalID bps.id isset set GlobalID->bps.id = 1
+
+bossbar add bps_tcg.turn ""
+bossbar set bps_tcg.turn name {"translate":"bps_tcg.your_turn","color":"green"}
+bossbar set bps_tcg.turn value 1
+bossbar set bps_tcg.turn max 1
+bossbar set bps_tcg.turn visible true
+bossbar set bps_tcg.turn color green
+
+bossbar add bps_tcg.not_turn ""
+bossbar set bps_tcg.not_turn name {"translate":"bps_tcg.not_your_turn","color":"red"}
+bossbar set bps_tcg.not_turn value 1
+bossbar set bps_tcg.not_turn max 1
+bossbar set bps_tcg.not_turn visible true
+bossbar set bps_tcg.not_turn color red

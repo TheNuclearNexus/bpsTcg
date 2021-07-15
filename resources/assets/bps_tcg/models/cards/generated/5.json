@@ -1,0 +1,6 @@
+{
+    "parent": "bps_tcg:cards/blank_hellish",
+    "textures": {
+        "image": "bps_tcg:cards/generated/5"
+    }
+}

@@ -1,0 +1,8 @@
+@language_level 2
+
+setblock ~ ~ ~ minecraft:barrel[facing=up]{CustomName:'{"translate":"bps_tcg.table","color":"green"}'}
+align xyz expand {
+    using summon minecraft:armor_stand ~.5 ~ ~.5 {Tags:["nex.ncgui","bps.gui"],Marker:1b,Invisible:1b,ArmorItems:[{id:"minecraft:stone",Count:1b,tag:{bps_tcg:{incoming:[],outgoing:[]}}},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258998}}]} with target {
+        set @s->bps.page = 1
+    }
+}

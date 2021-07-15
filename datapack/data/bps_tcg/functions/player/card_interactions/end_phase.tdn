@@ -1,0 +1,10 @@
+@require bps_tcg:player/card_interact
+if entity @s[tag=bps.done] if score ourTurn bps.data matches 1 function {
+    set phase->bps.data = 6
+    eval runAsPlayer(self, function() { 
+        title @s title {"translate":"bps_tcg.phase.start","color":"gold"} 
+    })
+    eval runAsPlayer(target, function() { 
+        title @s title {"translate":"bps_tcg.phase.start","color":"gold"} 
+    })
+}

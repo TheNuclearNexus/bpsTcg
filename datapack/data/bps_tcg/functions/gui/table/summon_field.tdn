@@ -1,0 +1,51 @@
+function bps_tcg:gui/table/update_rotation
+
+set temp->bps.data = @s->bps.id
+as @e[tag=bps.card_display,type=minecraft:armor_stand] if score @s bps.id = temp bps.data function {
+    kill @s
+}
+
+at @s summon minecraft:armor_stand ^0.9 ^0.3 ^-0.5 {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258996}}],Invisible:1b,Tags:["bps.card_display","bps.cancel"],Rotation:[180.0f,0.0f]}
+at @s summon minecraft:armor_stand ^-0.9 ^0.3 ^-0.5 {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258997}}],Invisible:1b,Tags:["bps.card_display","bps.done"],Rotation:[180.0f,0.0f]}
+at @s summon minecraft:armor_stand ^ ^-1.5 ^-0.54 {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258995}}],Invisible:1b,Tags:["bps.card_display","bps.quit"],Rotation:[180.0f,0.0f]}
+
+at @s positioned ^ ^-1 ^-0.525 function hand {
+    summon minecraft:armor_stand ^-0.9 ^ ^ {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258999}}],Invisible:1b,Tags:["bps.card_display","bps.hand","bps.hand.1"],Rotation:[180.0f,0.0f]}
+    summon minecraft:armor_stand ^-0.45 ^ ^ {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258999}}],Invisible:1b,Tags:["bps.card_display","bps.hand","bps.hand.2"],Rotation:[180.0f,0.0f]}
+    summon minecraft:armor_stand ^ ^ ^     {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258999}}],Invisible:1b,Tags:["bps.card_display","bps.hand","bps.hand.3"],Rotation:[180.0f,0.0f]}
+    summon minecraft:armor_stand ^0.45 ^ ^  {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258999}}],Invisible:1b,Tags:["bps.card_display","bps.hand","bps.hand.4"],Rotation:[180.0f,0.0f]}
+    summon minecraft:armor_stand ^0.9 ^ ^  {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258999}}],Invisible:1b,Tags:["bps.card_display","bps.hand","bps.hand.5"],Rotation:[180.0f,0.0f]}
+}
+
+at @s positioned ^1.3 ^-0.48 ^-0.55 function deck {
+    summon minecraft:armor_stand ^ ^ ^      {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4259001}}],Invisible:1b,Tags:["bps.card_display","bps.deck"],Rotation:[180.0f,0.0f],Pose:{Head:[90.0f,0.0f,0.0f]}}
+    summon minecraft:armor_stand ^ ^-0.02 ^ {NoGravity:1b,Marker:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4259001}}],Invisible:1b,Tags:["bps.card_display","bps.deck.stack"],Rotation:[180.0f,0.0f],Pose:{Head:[90.0f,0.0f,0.0f]}}
+    summon minecraft:armor_stand ^ ^-0.04 ^ {NoGravity:1b,Marker:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4259001}}],Invisible:1b,Tags:["bps.card_display","bps.deck.stack"],Rotation:[180.0f,0.0f],Pose:{Head:[90.0f,0.0f,0.0f]}}
+}
+
+at @s positioned ^ ^-0.43 ^-0.5 function unit_slots {
+    summon minecraft:armor_stand ^-0.9 ^ ^-0.025 {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258999}}],Invisible:1b,Tags:["bps.card_display","bps.unitSlot","bps.unitSlot.1"],Pose:{Head:[270.0f,0.0f,0.0f]},Rotation:[180.0f,0.0f]}
+    summon minecraft:armor_stand ^-0.45 ^ ^-0.0125 {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258999}}],Invisible:1b,Tags:["bps.card_display","bps.unitSlot","bps.unitSlot.2"],Pose:{Head:[270.0f,0.0f,0.0f]},Rotation:[180.0f,0.0f]}
+    summon minecraft:armor_stand ^ ^ ^     {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258999}}],Invisible:1b,Tags:["bps.card_display","bps.unitSlot","bps.unitSlot.3"],Pose:{Head:[270.0f,0.0f,0.0f]},Rotation:[180.0f,0.0f]}
+    summon minecraft:armor_stand ^0.45 ^ ^-0.0125  {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258999}}],Invisible:1b,Tags:["bps.card_display","bps.unitSlot","bps.unitSlot.4"],Pose:{Head:[270.0f,0.0f,0.0f]},Rotation:[180.0f,0.0f]}
+    summon minecraft:armor_stand ^0.9 ^ ^-0.025  {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258999}}],Invisible:1b,Tags:["bps.card_display","bps.unitSlot","bps.unitSlot.5"],Pose:{Head:[270.0f,0.0f,0.0f]},Rotation:[180.0f,0.0f]}
+}
+
+at @s positioned ^ ^-0.2 ^0.1 function enemy_cards {
+    summon minecraft:armor_stand ^-0.9 ^ ^ {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258999}}],Invisible:1b,Tags:["bps.card_display","bps.enemySlot","bps.enemySlot.1"],Pose:{Head:[345.0f,0.0f,0.0f]},Rotation:[180.0f,0.0f]}
+    summon minecraft:armor_stand ^-0.45 ^ ^ {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258999}}],Invisible:1b,Tags:["bps.card_display","bps.enemySlot","bps.enemySlot.2"],Pose:{Head:[345.0f,0.0f,0.0f]},Rotation:[180.0f,0.0f]}
+    summon minecraft:armor_stand ^ ^ ^     {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258999}}],Invisible:1b,Tags:["bps.card_display","bps.enemySlot","bps.enemySlot.3"],Pose:{Head:[345.0f,0.0f,0.0f]},Rotation:[180.0f,0.0f]}
+    summon minecraft:armor_stand ^0.45 ^ ^  {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258999}}],Invisible:1b,Tags:["bps.card_display","bps.enemySlot","bps.enemySlot.4"],Pose:{Head:[345.0f,0.0f,0.0f]},Rotation:[180.0f,0.0f]}
+    summon minecraft:armor_stand ^0.9 ^ ^  {NoGravity:1b,ArmorItems:[{},{},{},{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258999}}],Invisible:1b,Tags:["bps.card_display","bps.enemySlot","bps.enemySlot.5"],Pose:{Head:[345.0f,0.0f,0.0f]},Rotation:[180.0f,0.0f]}
+}
+
+set temp->bps.data = @s->bps.id
+
+tag @s add target
+as @e[tag=bps.card_display,distance=..6,type=minecraft:armor_stand,tag=!bps.owned] function {
+    set @s.Rotation = @e[tag=target,distance=..0.1,type=minecraft:armor_stand,limit=1].Rotation
+    at @s tp @s ~ ~ ~ ~180 ~
+    set @s->bps.id = temp->bps.data
+    
+    tag @s add bps.owned
+}

@@ -1,0 +1,51 @@
+@require bps_tcg:gui/table/battle_logic
+
+define function execute {
+    set $tempData = $player1
+    set $tempData.enemyUnits = $player2.units
+    function bps_tcg:gui/table/update_field
+    set $tempData = $player2
+    set $tempData.enemyUnits = $player1.units
+    set temp->bps.data = $target
+    as @e[tag=bps.gui,tag=bps.battle.child,tag=bps.battling,type=minecraft:armor_stand] function bps_tcg:gui/table/update_field
+    
+}
+
+var emptySlot : nbt = nbt<{id:"minecraft:clock",Count:1b,tag:{CustomModelData:4258999}}>
+
+set temp->bps.data = @s->bps.id
+as @e[tag=bps.card_display,tag=bps.hand] if score @s bps.id = temp bps.data function hand {
+    set @s.ArmorItems[3] = $emptySlot
+    tag @s remove bps.hand.has_card
+    
+    for(var i = 1; i <= 5; i++) {
+        if entity @s[tag=${"bps.hand." + i}] if data storage ${tempData.target} {data:{hand:[{s:${(tag_int)(i - 1)},card:{}}]}} function {
+            set @s.ArmorItems[3].tag = $tempData.hand[${i-1}].card
+            tag @s add bps.hand.has_card
+        }
+    }
+}
+
+as @e[tag=bps.card_display,tag=bps.unitSlot] if score @s bps.id = temp bps.data function units {
+    set @s.ArmorItems[3] = $emptySlot
+    tag @s remove bps.unitSlot.has_card
+    
+    for(var i = 1; i <= 5; i++) {
+        if entity @s[tag=${"bps.unitSlot." + i}] if data storage ${tempData.target} {data:{units:[{s:${(tag_int)(i - 1)},card:{}}]}} function {
+            set @s.ArmorItems[3].tag = $tempData.units[${i-1}].card
+            tag @s add bps.unitSlot.has_card
+        }
+    }
+}
+
+as @e[tag=bps.card_display,tag=bps.enemySlot] if score @s bps.id = temp bps.data function enemy_units {
+    set @s.ArmorItems[3] = $emptySlot
+    tag @s remove bps.enemySlot.has_card
+    
+    for(var i = 1; i <= 5; i++) {
+        if entity @s[tag=${"bps.enemySlot." + i}] if data storage ${tempData.target} {data:{enemyUnits:[{s:${(tag_int)(i - 1)},card:{}}]}} function {
+            set @s.ArmorItems[3].tag = $tempData.enemyUnits[${i-1}].card
+            tag @s add bps.enemySlot.has_card
+        }
+    }
+}

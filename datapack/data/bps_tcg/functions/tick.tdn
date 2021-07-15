@@ -1,0 +1,10 @@
+@tag tick
+
+as @a at @s function bps_tcg:player/tick
+
+as @e[type=minecraft:armor_stand,tag=bps.gui] at @s run function bps_tcg:gui/table/tick
+
+set GlobalTime->bps.data += 1
+
+bossbar set bps_tcg.turn players @a[tag=bps.curTurn,tag=bps.battling]
+bossbar set bps_tcg.not_turn players @a[tag=!bps.curTurn,tag=bps.battling]

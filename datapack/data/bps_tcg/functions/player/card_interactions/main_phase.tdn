@@ -1,0 +1,148 @@
+@require bps_tcg:player/card_interact
+
+if entity @s[tag=bps.hand,tag=bps.hand.has_card] function hand {
+    if score sneak bps.data matches 1 function sneak {
+        function bps_tcg:player/card_interactions/tell_stats
+    }
+    if score sneak bps.data matches 0 if score ourTurn bps.data matches 1 unless entity $table[tag=bps.playUnit] function not_sneak {
+        set bps_tcg:temp~data = @s.ArmorItems[3].tag.bps_tcg
+        
+        if entity @s[tag=bps.hand.1] set hand->bps.data = 0
+        if entity @s[tag=bps.hand.2] set hand->bps.data = 1
+        if entity @s[tag=bps.hand.3] set hand->bps.data = 2
+        if entity @s[tag=bps.hand.4] set hand->bps.data = 3
+        if entity @s[tag=bps.hand.5] set hand->bps.data = 4
+        
+        if data storage ${tempData.target} {data:{class:"Unit"}} as $table function if_unit {
+            set temp->bps.data = $tempData.cost
+
+            var types = ["Aquatic", "Hellish", "Undead", "Ender", "Terrestrial", "CUM"]
+            for(var i = 0; i < types.length; i++) {
+                if data storage bps_tcg:temp {data:{type:${(tag_string)(types[i])}}} function {
+                    set $duel.playUnitType (int) = $i
+                    set $duel.playUnit (int) = hand->bps.data
+                    tag @s add bps.playUnit
+                }
+            }
+        }
+        if data storage ${tempData.target} {data:{class:"Land"}} function if_land {
+            for(t in ["Aquatic", "Hellish", "Undead", "Ender", "Terrestrial", "CUM"]) {
+                var s : pointer = pointer<${entity<${"land" + t[0]}>}->bps.data>
+                var s2 : pointer = pointer<${entity<${"landT" + t[0]}>}->bps.data>
+                
+                if data storage bps_tcg:temp {data:{type:${(tag_string)t}}} function {
+                    set $s += 1
+                    set $s2 += 1
+                }
+            }
+            
+            as $table function update_hand {
+                for(var i = 0; i < 5; i++) {
+                    if score hand bps.data matches $i function {
+                        if entity @s[tag=bps.user.1] set $player1.hand[$i].card = null
+                        if entity @s[tag=bps.user.2] set $player2.hand[$i].card = null
+                    }
+                }
+                
+                eval updateTables(entity<@s>)
+            }
+        }
+    }
+}
+
+if entity @s[tag=bps.unitSlot] function unit {
+    if score sneak bps.data matches 1 if entity @s[tag=bps.unitSlot.has_card] function sneak {
+        function bps_tcg:player/card_interactions/tell_stats
+    }
+    if score sneak bps.data matches 0 if score ourTurn bps.data matches 1 if entity $table[tag=bps.playUnit] function not_sneak {
+        if entity @s[tag=bps.unitSlot.1] set temp->bps.data = 0
+        if entity @s[tag=bps.unitSlot.2] set temp->bps.data = 1
+        if entity @s[tag=bps.unitSlot.3] set temp->bps.data = 2
+        if entity @s[tag=bps.unitSlot.4] set temp->bps.data = 3
+        if entity @s[tag=bps.unitSlot.5] set temp->bps.data = 4
+        
+        set id->bps.data = @s->bps.id
+        
+        as $table function {
+            set temp1->bps.data = $duel.playUnit
+            set temp2->bps.data = $duel.playUnitType
+            
+            var types = ["landA", "landH", "landU", "landE", "landT", "landC"]
+            for(var i = 0; i < 5; i++) {
+                if score temp2 bps.data matches $i set mana->bps.data = ${pointer<${entity<${types[i]}>}->bps.data>}
+            }
+            eval getPlayerData(pointer<id->bps.data>)
+            eval UArrayUtil.get(pointer<temp1->bps.data>, pointer<$tempData.hand>)
+            
+            set cost->bps.data = bps_tcg:temp~out.card.bps_tcg.cost
+            
+            unless score mana bps.data >= cost bps.data function not_enough_mana {
+                eval runAsPlayer(pointer<id->bps.data>, function() {
+                        tellraw @s [{"translate":"bps_tcg.insufficient_mana","color":"gold","with":[{"nbt":"out.card.bps_tcg.type","storage":"bps_tcg:temp"},{"score":{"objective":"bps.data","name":"cost"},"color":"white"},{"score":{"objective":"bps.data","name":"mana"},"color":"white"}]}]
+                    })
+            }
+            if score mana bps.data >= cost bps.data function enough_mana {
+                for(var i = 0; i < 5; i++) {
+                    if score temp bps.data matches $i function {
+                        set $tempData.units[$i].card = bps_tcg:temp~out.card
+                    }
+                }
+                set bps_tcg:temp~out.card = null
+                eval UArrayUtil.set(pointer<temp1->bps.data>, pointer<bps_tcg:temp~out>, pointer<$tempData.hand>)
+                eval setPlayerData(pointer<id->bps.data>)
+                
+                for(var i = 0; i < 5; i++) {
+                    if score temp2 bps.data matches $i set ${pointer<${entity<${types[i]}>}->bps.data>} -= cost->bps.data
+                }
+                
+                eval updateTables(entity<@s>)
+            }
+
+            tag @s remove bps.playUnit
+        }
+    }
+}
+
+if entity @s[tag=bps.deck] if score ourTurn bps.data matches 1 function {
+    set id->bps.data = @s->bps.id
+    
+    as $table if entity @s[tag=bps.playUnit] function {
+        set temp1->bps.data = $duel.playUnit
+        
+        eval getPlayerData(pointer<id->bps.data>)
+        eval UArrayUtil.get(pointer<temp1->bps.data>, pointer<$tempData.hand>)
+        
+        set bps_tcg:temp~data1 = {id:"minecraft:clock",tag:{}}
+        set bps_tcg:temp~data1.tag = bps_tcg:temp~out.card
+        
+        data modify storage bps_tcg:temp data.deck append from storage bps_tcg:temp data1
+        
+        set bps_tcg:temp~out.card = null
+        
+        eval UArrayUtil.set(pointer<temp1->bps.data>, pointer<bps_tcg:temp~out>, pointer<$tempData.hand>)
+        eval setPlayerData(pointer<id->bps.data>)
+        
+        eval updateTables(entity<@s>)
+        
+        tag @s remove bps.playUnit
+    
+    }
+}
+if entity @s[tag=bps.cancel] if score ourTurn bps.data matches 1 function {
+    as $table function {
+        if entity @s[tag=bps.playUnit] function {
+            tag @s remove bps.playUnit
+        }
+    }
+}
+
+
+if entity @s[tag=bps.done] if score ourTurn bps.data matches 1 as $table function {
+    set phase->bps.data = 3
+    eval runAsPlayer(self, function() { 
+        title @s title {"translate":"bps_tcg.phase.combat","color":"gold"} 
+    })
+    eval runAsPlayer(target, function() { 
+        title @s title {"translate":"bps_tcg.phase.combat","color":"gold"} 
+    })
+}

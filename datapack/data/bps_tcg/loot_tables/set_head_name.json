@@ -1,0 +1,29 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:player_head",
+          "functions": [
+            {
+              "function": "minecraft:set_name",
+              "entity": "this",
+              "name": {
+                "nbt": "temp",
+                "storage": "bps_tcg:table",
+                "color": "white",
+                "italic": false
+              }
+            },
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{gui:1b,SkullOwner:{},bps_tcg:{id:0}}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

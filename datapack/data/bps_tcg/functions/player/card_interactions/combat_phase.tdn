@@ -1,0 +1,10 @@
+@require bps_tcg:player/card_interact
+if entity @s[tag=bps.done] if score ourTurn bps.data matches 1 as $table function {
+    set phase->bps.data = 4
+    eval runAsPlayer(self, function() { 
+        title @s title {"translate":"bps_tcg.phase.post","color":"gold"} 
+    })
+    eval runAsPlayer(target, function() { 
+        title @s title {"translate":"bps_tcg.phase.post","color":"gold"} 
+    })
+}

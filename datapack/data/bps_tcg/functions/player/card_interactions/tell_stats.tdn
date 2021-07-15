@@ -1,0 +1,8 @@
+set bps_tcg:temp~data = @s.ArmorItems[3].tag.bps_tcg
+tellraw @a[tag=curUser] ${text_component<[
+        {"text":"-----------------\n","color":"dark_gray"},
+        {"translate":"bps_tcg.d.name","color":"gold","with":[{"nbt":"data.name","storage":"bps_tcg:temp","color":"white"},{"nbt":"data.class","storage":"bps_tcg:temp","color":"white"}]},"\n",
+        {"translate":"bps_tcg.d.health","color":"gold","with":[{"nbt":"data.health","storage":"bps_tcg:temp","color":"white"},{"nbt":"data.max_health","storage":"bps_tcg:temp","color":"white"}]}, "\n",
+        {"translate":"bps_tcg.d.power_roll","color":"gold","with":[{"nbt":"data.power","storage":"bps_tcg:temp","color":"white"},{"nbt":"data.roll","storage":"bps_tcg:temp","color":"white"}]}, "\n",
+        {"translate":"bps_tcg.d.cost","color":"gold","with":[{"nbt":"data.cost","storage":"bps_tcg:temp","color":"white"}]}
+]>}

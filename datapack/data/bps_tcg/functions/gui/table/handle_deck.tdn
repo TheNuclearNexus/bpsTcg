@@ -1,0 +1,20 @@
+for(var o = 0; o < 4; o++) {
+    if score @s bps.data matches $o function ${Reflection.getWritingFile().resolve("page_" + o)} {
+        for(var i = 0; i <= 14; i++) {
+            var slot : int = i
+            var p : int = (i+(15*o))
+            do if(slot >= 0) eval slot += 2
+            do if(slot >= 7) eval slot += 4
+            do if(slot >= 16) eval slot += 4
+
+            unless data block ~ ~ ~ Items[{Slot:${(tag_byte)slot}}].tag.gui function ${Reflection.getWritingFile().resolve("click_" + p)}{
+                function bps_tcg:gui/table/display_deck
+                set temp->bps.data = @s->bps.id
+                as @a[distance=..5] if score temp bps.data = @s bps.id function {
+                    clear @s #nexus:all{gui:1b}
+                    playsound minecraft:ui.button.click master @s
+                }
+            }
+        }
+    }
+}

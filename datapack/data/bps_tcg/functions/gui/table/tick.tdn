@@ -1,0 +1,52 @@
+@priority -1
+
+if entity @s[tag=!bps.battling] function ${Reflection.getWritingFile().resolve("gui")} {
+    unless block ~ ~ ~ minecraft:barrel[facing=up] expand {
+        kill @e[type=item,distance=..3,nbt={Item:{tag:{gui:1b}}}]
+        kill @s
+    }
+    
+    if entity @s[tag=!bps.open] if block ~ ~ ~ minecraft:barrel[facing=up,open=true] function {
+        tag @s add bps.open
+        data merge block ~ ~ ~ {Lock:"§can't open this"}
+        
+        as @a[sort=nearest] if score @s bps.open_time = GlobalTime bps.data function {
+            set temp->bps.data = @s->bps.id
+        }
+        
+        set @s->bps.id = temp->bps.data
+        
+        eval tablePages.goToPage("main_menu", false)
+        
+        
+    }
+    
+    if entity @s[tag=bps.open] function {
+        eval tablePages.generatePageControls()
+    }
+    
+    if entity @s[tag=bps.open] if block ~ ~ ~ minecraft:barrel[facing=up,open=false] function {
+        eval tablePages.callOnExit()
+        
+        tag @s remove bps.open
+        data merge block ~ ~ ~ {Lock:""}
+        
+        
+        set @s->bps.id = null
+        
+        set @s.ArmorItems[0].tag.bps_tcg.incoming = []
+        set @s.ArmorItems[0].tag.bps_tcg.outgoing = []
+    }
+}
+
+if entity @s[tag=bps.battling] function ${Reflection.getWritingFile().resolve("battle")} {
+    unless block ~ ~ ~ minecraft:barrier function {
+        kill @s
+        
+        function bps_tcg:gui/table/quit_battle
+        
+        setblock ~ ~ ~ air
+    }
+    
+    if entity @s[tag=bps.battle.host] function bps_tcg:gui/table/battle_logic
+}

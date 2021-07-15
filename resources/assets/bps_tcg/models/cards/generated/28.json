@@ -1,0 +1,6 @@
+{
+    "parent": "bps_tcg:cards/blank_undead",
+    "textures": {
+        "image": "bps_tcg:cards/generated/28"
+    }
+}

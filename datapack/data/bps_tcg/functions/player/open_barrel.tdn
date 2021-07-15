@@ -1,0 +1,2 @@
+set @s->bps.open_time = GlobalTime->bps.data
+advancement revoke @s only bps_tcg:open_barrel

@@ -1,0 +1,3 @@
+if entity @s[tag=bps.done] if score ourTurn bps.data matches 1 function {
+    set phase->bps.data = 2
+}

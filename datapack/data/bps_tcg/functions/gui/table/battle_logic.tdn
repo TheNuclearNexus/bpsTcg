@@ -1,0 +1,224 @@
+@require bps_tcg:util/random
+@require bps_tcg:util/uarray
+
+var target : pointer = pointer<@s.ArmorItems[0].tag.bps_tcg.duel.target>
+var self : pointer = pointer<@s->bps.id>
+var tempData : pointer = pointer<bps_tcg:temp~data>
+var duel : pointer = pointer<@s.ArmorItems[0].tag.bps_tcg.duel>
+var player1 : pointer = pointer<@s.ArmorItems[0].tag.bps_tcg.duel.player1>
+var player2 : pointer = pointer<@s.ArmorItems[0].tag.bps_tcg.duel.player2>
+
+var updateTables : function = function(host : entity) {
+    as $host /function bps_tcg:gui/table/update_field/execute
+}
+
+var getPlayerData : function = function(id : pointer) {
+    set temp->bps.id = $target
+    if score temp bps.id = deref $id set $tempData = $player2
+    if score deref $self = deref $id set $tempData = $player1
+}
+
+var setPlayerData : function = function(id : pointer) {
+    set temp->bps.id = $target
+    if score temp bps.id = deref $id set $player2 = $tempData
+    if score deref $self = deref $id set $player1 = $tempData
+}
+
+var shuffleDeck : function = function(deck : pointer) {
+    set in->bps.data = len->bps.data
+    function bps_tcg:util/random/hand
+    set c2->bps.data = out->bps.data
+    
+    eval UArrayUtil.get(pointer<i->bps.data>, deck)
+    set bps_tcg:temp~data = bps_tcg:temp~out
+    eval UArrayUtil.get(pointer<c2->bps.data>, deck)
+    set bps_tcg:temp~data1 = bps_tcg:temp~out
+
+    
+    eval UArrayUtil.set(pointer<i->bps.data>, pointer<bps_tcg:temp~data1>, deck)
+    eval UArrayUtil.set(pointer<c2->bps.data>, pointer<bps_tcg:temp~data>, deck)
+    
+    set i->bps.data += 1
+    if score i bps.data < len bps.data function / 
+}
+var dealHand : function = function(id : pointer, player : pointer) {
+    set temp->bps.data = $id
+    
+    set $player.hand = [{s:0},{s:1},{s:2},{s:3},{s:4}]
+    set $player.units = [{s:0},{s:1},{s:2},{s:3},{s:4}]
+    set $player.lands = {
+        a:0,tA:0,
+        h:0,tH:0,
+        t:0,tT:0,
+        e:0,tE:0,
+        u:0,tU:0,
+        c:0,tC:0
+    }
+    
+    for(var i = 0; i < 5; i++) {
+        set $player.hand[$i].card = $player.deck[$i].tag
+    }
+    
+    set $player.deck[0] = null
+    set $player.deck[0] = null
+    set $player.deck[0] = null
+    set $player.deck[0] = null
+    set $player.deck[0] = null
+}
+var runAsPlayer : function = function(id : pointer, command : function) {
+    set temp->bps.data = $id
+    as @a if score @s bps.id = temp bps.data expand {
+        eval command()
+    }
+}
+var runFuncAsPlayer : function = function(id : pointer, command : function) {
+    set temp->bps.data = $id
+    as @a if score @s bps.id = temp bps.data function {
+        eval command()
+    }
+}
+if score @s bps.data matches 5 function end {  
+    if entity @s[tag=bps.user.1] function {
+        eval runAsPlayer(target, function() {
+                tag @s add bps.curTurn
+            })
+        eval runAsPlayer(self, function() {
+                tag @s remove bps.curTurn
+            })
+        
+        tag @s remove bps.user.1
+        tag @s add bps.user.2
+        tag @s add done
+    }
+    
+    if entity @s[tag=bps.user.2,tag=!done] function {
+        eval runAsPlayer(target, function() {
+                tag @s remove bps.curTurn
+            })
+        eval runAsPlayer(self, function() {
+                tag @s add bps.curTurn
+            })
+        
+        tag @s remove bps.user.2
+        tag @s add bps.user.1
+    }
+    
+    tag @s remove done
+    tag @s remove bps.playUnit
+    set @s->bps.data = 1
+}
+    
+if score @s bps.data matches 2 function main {
+    var manaDisplay = text_component<[
+            {"text":"","color":"dark_gray"},
+            {"nbt":"data.a","storage":"bps_tcg:temp","color":"blue"},"/",{"nbt":"data.tA","storage":"bps_tcg:temp","color":"blue"},"  ",
+            {"nbt":"data.h","storage":"bps_tcg:temp","color":"red"},"/",{"nbt":"data.tH","storage":"bps_tcg:temp","color":"red"},"  ",
+            {"nbt":"data.u","storage":"bps_tcg:temp","color":"gray"},"/",{"nbt":"data.tU","storage":"bps_tcg:temp","color":"gray"},"  ",
+            {"nbt":"data.t","storage":"bps_tcg:temp","color":"green"},"/",{"nbt":"data.tT","storage":"bps_tcg:temp","color":"green"},"  ",
+            {"nbt":"data.e","storage":"bps_tcg:temp","color":"dark_purple"},"/",{"nbt":"data.tE","storage":"bps_tcg:temp","color":"dark_purple"},"  ",
+            {"nbt":"data.c","storage":"bps_tcg:temp","color":"white"},"/",{"nbt":"data.tC","storage":"bps_tcg:temp","color":"white"}
+        ]>
+    
+    set $tempData = $player1.lands
+    eval runAsPlayer(self, function() {
+            title @s actionbar $manaDisplay
+        })
+    set $tempData = $player2.lands
+    eval runAsPlayer(target, function() {
+            title @s actionbar $manaDisplay
+        })
+    
+    if entity @s[tag=bps.playUnit] function {
+        set temp->bps.data = $duel.playUnit
+        
+        if entity @s[tag=bps.user.2] set temp1->bps.data = $target
+        if entity @s[tag=bps.user.1] set temp1->bps.data = $self
+        
+        for(var i = 0; i < 5; i++) {
+            if score temp bps.data matches $i as @e[tag=bps.hand,tag=bps.card_display,tag=${"bps.hand." + (i+1)}] if score @s bps.id = temp1 bps.data at @s function {
+                particle dust 0 1 0 0.2 ~ ~1.9 ~ 0 0 0 0 1
+            }
+        }
+    }
+}
+
+if score @s bps.data matches 1 function start {
+    if entity @s[tag=bps.user.2] set $tempData = $player2
+    if entity @s[tag=bps.user.1] set $tempData = $player1
+    
+
+    function give_card {
+        for(var i = 4; i >= 0; i--) {
+            unless data storage ${tempData.target} {data:{hand:[{s:${(tag_int)i},card:{}}]}} function {
+                set $tempData.hand[$i].card = $tempData.deck[0].tag
+                set $tempData.deck[0] = null
+            }
+        }
+    }
+    
+    function reset_mana {
+        set $tempData.lands.a = $tempData.lands.tA
+        set $tempData.lands.h = $tempData.lands.tH
+        set $tempData.lands.u = $tempData.lands.tU
+        set $tempData.lands.t = $tempData.lands.tT
+        set $tempData.lands.e = $tempData.lands.tE
+        set $tempData.lands.c = $tempData.lands.tC
+    }
+    
+    if entity @s[tag=bps.user.2] set $player2 = $tempData
+    if entity @s[tag=bps.user.1] set $player1 = $tempData
+    
+    eval updateTables(entity<@s>)
+    
+    eval runAsPlayer(self, function() { 
+            title @s title {"translate":"bps_tcg.phase.main","color":"gold"} 
+        })
+    eval runAsPlayer(target, function() { 
+            title @s title {"translate":"bps_tcg.phase.main","color":"gold"} 
+        })
+    set @s->bps.data = 2
+}
+
+if score @s bps.data matches 0 function init {
+    set in->bps.data = $self
+    function bps_tcg:player/data/get
+    set $player1 = bps_tcg:player~out
+    
+    set in->bps.data = $target
+    function bps_tcg:player/data/get
+    set $player2 = bps_tcg:player~out
+    
+    set len->bps.data = $player1.deck
+    set i->bps.data = 0
+    function shuffle_p1 {
+        eval shuffleDeck(pointer<$player1.deck>)
+    }
+    
+    set len->bps.data = $player2.deck
+    set i->bps.data = 0
+    function shuffle_p2 {
+        eval shuffleDeck(pointer<$player2.deck>)
+    }
+    
+    function deal_p1 {
+        eval dealHand(self, player1)
+    }
+    function deal_p2 {
+        eval dealHand(target, player2)
+    }
+
+    eval updateTables(entity<@s>)
+    
+    
+    eval runAsPlayer(self, function() { 
+            title @s title {"translate":"bps_tcg.phase.start","color":"gold"} 
+        })
+    eval runAsPlayer(target, function() { 
+            title @s title {"translate":"bps_tcg.phase.start","color":"gold"} 
+            tag @s add bps.curTurn
+        })
+    tag @s add bps.user.2
+    
+    set @s->bps.data = 1
+}
+

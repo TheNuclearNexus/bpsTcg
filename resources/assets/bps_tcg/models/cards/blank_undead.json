@@ -1,0 +1,6 @@
+{
+    "parent":"bps_tcg:cards/blank_aquatic",
+    "textures":{
+        "background":"bps_tcg:cards/blank_undead"
+    }
+}

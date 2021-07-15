@@ -1,0 +1,28 @@
+set temp->bps.data = @s->bps.id
+
+tag @s remove bps.battling
+setblock ~ ~ ~ minecraft:barrel[facing=up]
+as @a if score @s bps.id = temp bps.data function {
+    tag @s remove bps.battling
+    tag @s remove bps.curTurn
+}    
+as @e[tag=bps.card_display] if score @s bps.id = temp bps.data kill @s
+
+store result score temp bps.data data get entity @s ArmorItems[0].tag.bps_tcg.duel.target
+
+as @e[tag=bps.gui,tag=bps.battling] if score @s bps.id = temp bps.data at @s function {
+    as @e[tag=bps.card_display] if score @s bps.id = temp bps.data kill @s
+    as @a if score @s bps.id = temp bps.data function {
+        tag @s remove bps.battling
+        tag @s remove bps.curTurn
+    }
+    setblock ~ ~ ~ minecraft:barrel[facing=up]{CustomName:'{"translate":"bps_tcg.table","color":"green"}'}
+    tag @s remove bps.battling
+    
+    tag @s remove bps.battle.child
+}
+
+tag @s remove bps.battle.host
+tag @s remove bps.playUnit
+tag @e[tag=!bps.battling] remove bps.user.1
+tag @e[tag=!bps.battling] remove bps.user.2

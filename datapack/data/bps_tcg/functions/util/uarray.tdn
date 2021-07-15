@@ -1,0 +1,124 @@
+@priority 10
+
+define function get {
+    var bst = function(low : int, high : int) {
+        do if(!debugBuild) {
+            var mid = (low + high) / 2
+            
+            do if(low == high) {
+                set bps_tcg:temp~out = bps_tcg:temp~in[${low}]
+            } else if(low + 1 == high) {
+                if score in bps.data matches $low set bps_tcg:temp~out = bps_tcg:temp~in[${low}]
+                if score in bps.data matches $high set bps_tcg:temp~out = bps_tcg:temp~in[${low+1}]
+            } else {
+                if score in bps.data matches $low..$mid function ${Reflection.getCurrentFile().resolve((string)low + "_" + (string)mid)} {eval bst(low, mid)}
+                if score in bps.data matches ${mid+1}..$high function ${Reflection.getCurrentFile().resolve((string)(mid+1) + "_" + (string)high)} {eval bst(mid+1, high)}
+            }
+        } else {
+            for(low; low <= high; low += 16) {
+                if score in bps.data matches $low..${low+15} function ${Reflection.getWritingFile().resolve("s" + low)} {
+                    for(var i = 0; i < 16; i++) {
+                        if score in bps.data matches ${low + i} set bps_tcg:temp~out = bps_tcg:temp~in[${low+i}]
+                    }
+                }
+            }
+        }
+    }
+    #> input 1: in->bps.data (The id)
+    #> input 2: bps_tcg:temp~in (The array)
+    #> output: bps_tcg:temp~out
+    
+    set bps_tcg:temp~out = null
+    eval bst(0, 1024)
+}
+
+define function remove {
+    var bst = function(low : int, high : int) {
+        do if(!debugBuild) {
+            var mid = (low + high) / 2
+            
+            do if(low == high) {
+                data remove storage bps_tcg:temp in[${low}]
+            } else if(low + 1 == high) {
+                if score in bps.data matches $low data remove storage bps_tcg:temp in[${low}]
+                if score in bps.data matches $high data remove storage bps_tcg:temp in[${low+1}]
+            } else {
+                if score in bps.data matches $low..$mid function ${Reflection.getCurrentFile().resolve((string)low + "_" + (string)mid)} {eval bst(low, mid)}
+                if score in bps.data matches ${mid+1}..$high function ${Reflection.getCurrentFile().resolve((string)(mid+1) + "_" + (string)high)} {eval bst(mid+1, high)}
+            }
+        } else {
+            for(low; low <= high; low += 16) {
+                if score in bps.data matches $low..${low+15} function ${Reflection.getWritingFile().resolve("s" + low)} {
+                    for(var i = 0; i < 16; i++) {
+                        if score in bps.data matches ${low + i} data remove storage bps_tcg:temp in[${low+i}]
+                    }
+                }
+            }
+        }
+    }
+    #> input 1: in->bps.data (The id)
+    #> input 2: bps_tcg:temp~in (The array)
+    #> output: bps_tcg:temp~out 
+    
+    eval bst(0, 1024)
+    set bps_tcg:temp~out = bps_tcg:temp~in
+}
+
+define function set {
+    var bst = function(low : int, high : int) {
+        do if(!debugBuild) {
+            var mid = (low + high) / 2
+            
+            do if(low == high) {
+                set bps_tcg:temp~in1[${low}] = bps_tcg:temp~in
+            } else if(low + 1 == high) {
+                if score in bps.data matches $low set bps_tcg:temp~in1[${low}] = bps_tcg:temp~in
+                if score in bps.data matches $high set bps_tcg:temp~in1[${low+1}] = bps_tcg:temp~in
+            } else {
+                if score in bps.data matches $low..$mid function ${Reflection.getCurrentFile().resolve((string)low + "_" + (string)mid)} {eval bst(low, mid)}
+                if score in bps.data matches ${mid+1}..$high function ${Reflection.getCurrentFile().resolve((string)(mid+1) + "_" + (string)high)} {eval bst(mid+1, high)}
+            }
+        } else {
+            for(low; low <= high; low += 16) {
+                if score in bps.data matches $low..${low+15} function ${Reflection.getWritingFile().resolve("s" + low)} {
+                    for(var i = 0; i < 16; i++) {
+                        if score in bps.data matches ${low + i} set bps_tcg:temp~in1[${(low+i)}] = bps_tcg:temp~in 
+                    }
+                }
+            }
+        }
+
+    }
+    #> input 1: in->bps.data (The id)
+    #> input 2: bps_tcg:temp~in (The data)
+    #> input 3: bps_tcg:temp~in1 (The array)
+    #> output: bps_tcg:temp~out
+    eval bst(0, 1024)
+    set bps_tcg:temp~out = bps_tcg:temp~in1
+}
+
+define global static class UArrayUtil {
+    public static get(index : pointer, array : pointer) {
+        set in->bps.data = $index
+        set bps_tcg:temp~in = $array
+        
+        function bps_tcg:util/uarray/get
+    }
+    public static set(index : pointer, data : pointer, array : pointer) {
+        set in->bps.data = $index
+        set bps_tcg:temp~in = $data
+        set bps_tcg:temp~in1 = $array
+        
+        function bps_tcg:util/uarray/set
+        
+        set $array = bps_tcg:temp~out
+    }
+    public static remove(index : pointer, array : pointer) {
+        set in->bps.data = $index
+        set bps_tcg:temp~in = $array
+        
+        function bps_tcg:util/uarray/remove
+        
+        set $array = bps_tcg:temp~out
+    }
+}

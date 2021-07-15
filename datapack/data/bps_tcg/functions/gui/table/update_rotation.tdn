@@ -1,0 +1,16 @@
+@language_level 2
+
+set temp->bps.data = @s->bps.id
+tag @s add target
+as @a if score @s bps.id = temp bps.data tp @e[tag=target,distance=..0.1] ~ ~ ~ facing entity @s feet
+tag @s remove target
+
+store result score temp bps.data data get entity @s Rotation[0]
+
+if score temp bps.data matches ..-1 set temp->bps.data *= -1
+
+if score temp bps.data matches ..45 tp @s ~ ~ ~ 180 0
+if score temp bps.data matches 46..135 tp @s ~ ~ ~ 270 0
+if score temp bps.data matches 136..225 tp @s ~ ~ ~ 0 0
+if score temp bps.data matches 226..315 tp @s ~ ~ ~ 90 0
+if score temp bps.data matches 316.. tp @s ~ ~ ~ 180 0

@@ -1,0 +1,21 @@
+{
+  "input-resources": "(automatically selected by Trident-UI)",
+  "output": {
+    "directories": {
+      "data-pack": "B:\\Projects\\Trident\\NexusModules\\bpsTcg\\out\\bpsTcg",
+      "resource-pack": "B:\\Projects\\Trident\\NexusModules\\bpsTcg\\out\\bpsTcg-resources.zip"
+    },
+    "clean-directories": {
+      "data-pack": true,
+      "resource-pack": true
+    },
+    "export-comments": true,
+    "export-gamelog": true
+  },
+  "trident-ui": {
+    "actions": {
+      "pre": [],
+      "post": []
+    }
+  }
+}

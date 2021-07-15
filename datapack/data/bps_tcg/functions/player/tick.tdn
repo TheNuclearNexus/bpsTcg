@@ -1,0 +1,22 @@
+@language_level 2
+unless score @s bps.id isset function {
+    set @s->bps.id = GlobalID->bps.id
+    set GlobalID->bps.id += 1
+    
+    set bps_tcg:player~temp = {id:0,deck:[]}
+    store result storage bps_tcg:player temp.id int 1 scoreboard players get @s bps.id
+    
+    data modify storage bps_tcg:player data append from storage bps_tcg:player temp
+    data remove storage bps_tcg:player temp
+}
+
+
+if entity @s[tag=bps.battling] function in_battle {
+    
+}
+
+tag @s remove bps.sneak
+if score @s bps.sneak matches 1.. function {
+    tag @s add bps.sneak
+    set @s->bps.sneak = null
+}

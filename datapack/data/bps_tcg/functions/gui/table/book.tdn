@@ -1,0 +1,180 @@
+@language_level 2
+@require bps_tcg:gui/page
+@require bps_tcg:cards
+@require nexus:ncstd/collections
+@require bps_tcg:player/data
+
+var deck : Page = new Page()
+var battle : Page = new Page()
+var packs : Page = new Page()
+var mainMenu : Page = new Page()
+
+# Deck Page Logic
+eval deck.add(0, new Button(item<minecraft:white_concrete{gui:1b,display:{Name:'{"translate":"bps_tcg.up","italic":false}'}}>, 1, function() {
+            if score @s bps.data matches 1.. function {
+                set @s->bps.data -= 1
+                function bps_tcg:gui/table/display_deck
+            }
+        }))
+eval deck.add(8, new Button(item<minecraft:tnt{gui:1b,display:{Name:'{"translate":"bps_tcg.reset_deck","italic":false,"color":"red"}'}}>, 1, function() {
+            set in->bps.data = @s->bps.id
+            /function bps_tcg:player/data/get
+            for(var i = 0; i < 60; i++) {
+                if data storage bps_tcg:player out.deck[{d:${(tag_int)i}}] function ${Reflection.getWritingFile().resolve("drop_" + i)} {
+                    using summon item ~ ~ ~ {PickupDelay:10s,Item:{id:"minecraft:stone",Count:1b,tag:{}}} with target {
+                        set @s.Item.id = bps_tcg:player~out.deck[{d:${(tag_int)i}}].id
+                        set @s.Item.tag = bps_tcg:player~out.deck[{d:${(tag_int)i}}].tag
+                    }
+                }
+            }
+            set bps_tcg:player~out.deck = []
+            set bps_tcg:player~in = bps_tcg:player~out
+            function bps_tcg:player/data/set
+            function bps_tcg:gui/table/display_deck
+        }))
+eval deck.add(18, new Button(item<minecraft:white_concrete{gui:1b,display:{Name:'{"translate":"bps_tcg.down","italic":false}'}}>, 1, function() {
+            if score @s bps.data matches ..2 function {
+                set @s->bps.data += 1
+                function bps_tcg:gui/table/display_deck
+            }
+        }))
+
+eval deck.add(1, new Element(item<minecraft:black_stained_glass_pane{gui:1b,display:{Name:'{"text":"","italic":false}'}}>, 1))
+eval deck.add(7, new Element(item<minecraft:black_stained_glass_pane{gui:1b,display:{Name:'{"text":"","italic":false}'}}>, 1))
+eval deck.add(10, new Element(item<minecraft:black_stained_glass_pane{gui:1b,display:{Name:'{"text":"","italic":false}'}}>, 1))
+eval deck.add(16, new Element(item<minecraft:black_stained_glass_pane{gui:1b,display:{Name:'{"text":"","italic":false}'}}>, 1))
+eval deck.add(17, new Element(item<minecraft:black_stained_glass_pane{gui:1b,display:{Name:'{"text":"","italic":false}'}}>, 1))
+eval deck.add(19, new Element(item<minecraft:black_stained_glass_pane{gui:1b,display:{Name:'{"text":"","italic":false}'}}>, 1))
+eval deck.add(25, new Element(item<minecraft:black_stained_glass_pane{gui:1b,display:{Name:'{"text":"","italic":false}'}}>, 1))
+eval deck.add(26, new Button(item<minecraft:arrow{gui:1b,display:{Name:'{"translate":"bps_tcg.back","italic":false,"color":"white"}'}}>, 1,  function() {
+            eval tablePages.goToPage("main_menu")
+        }))
+
+eval deck.onEnter = function() {
+    set @s->bps.data = 0
+    function bps_tcg:gui/table/display_deck
+}
+
+eval deck.onRender = function() {
+    if data block ~ ~ ~ Items[{Slot:9b}] function {
+        set in->bps.data = @s->bps.id
+        /function bps_tcg:player/data/get
+        
+        store result score temp bps.data data get storage bps_tcg:player out.deck 1
+       
+        unless data block ~ ~ ~ {Items:[{Slot:9b,tag:{bps_tcg:{card:1b}}}]} function {
+            set bps_tcg:temp~block = (~ ~ ~).Items[{Slot:9b}]
+            using summon item ~ ~1 ~ {PickupDelay:10s,Item:{id:"minecraft:stone",Count:1b,tag:{}}} with target {
+                set @s.Item.id = bps_tcg:temp~block.id
+                set @s.Item.tag = bps_tcg:temp~block.tag
+                set @s.Item.Count = bps_tcg:temp~block.Count
+            }
+            replaceitem block ~ ~ ~ container.9 air
+        }
+         
+        if score temp bps.data matches ..59 if data block ~ ~ ~ {Items:[{Slot:9b,tag:{bps_tcg:{card:1b}}}]} function {
+            data modify storage bps_tcg:player out.deck append from block ~ ~ ~ Items[{Slot:9b}]
+            set bps_tcg:player~out.deck[-1].Slot = null
+            set bps_tcg:player~out.deck[-1].Count = null
+            
+            store result storage bps_tcg:player out.deck[-1].d int 1 scoreboard players get temp bps.data
+            
+            store result score temp bps.data data get block ~ ~ ~ Items[{Slot:9b}].Count
+            set temp->bps.data -= 1
+            store result block ~ ~ ~ Items[{Slot:9b}].Count byte 1 scoreboard players get temp bps.data
+            
+            set bps_tcg:player~in = bps_tcg:player~out
+            /function bps_tcg:player/data/set
+            
+            function bps_tcg:gui/table/display_deck
+        }
+    }
+    
+    function bps_tcg:gui/table/handle_deck
+}
+
+# Packs Menu Logic
+var sellPack : function = function(amount : int, loot : resource) {
+    set temp->bps.data = @s->bps.id
+    as @a[distance=..12] if score @s bps.id = temp bps.data at @s function {
+        store result score temp2 bps.data clear @s diamond 0
+        if score temp2 bps.data matches $amount.. function {
+            clear @s diamond $amount
+            loot spawn ~ ~ ~ loot $loot
+        }
+    }
+}
+
+eval packs.add(10, new Button(item<minecraft:grass_block{gui:1b,display:{Name:'{"translate":"bps_tcg.lands","italic":false,"color":"white"}',Lore:['[{"translate":"item.minecraft.diamond","italic":false,"color":"aqua"}, " x5"]']}}>, 1,  function() {eval sellPack(5, resource<bps_tcg:cards/lands>)}))
+eval packs.add(13, new Button(item<minecraft:player_head{gui:1b,display:{Name:'{"translate":"bps_tcg.units","italic":false,"color":"white"}',Lore:['[{"translate":"item.minecraft.diamond","italic":false,"color":"aqua"}, " x10"]']}}>, 1, function() {eval sellPack(10, resource<bps_tcg:cards/units>)}))
+eval packs.add(16, new Button(item<minecraft:creeper_head{gui:1b,display:{Name:'{"translate":"bps_tcg.mobs","italic":false,"color":"white"}',Lore:['[{"translate":"item.minecraft.diamond","italic":false,"color":"aqua"}, " x7"]']}}>, 1,  function() {eval sellPack(7, resource<minecraft:blocks/potatoes>)}))
+eval packs.add(18, new Button(item<minecraft:arrow{gui:1b,display:{Name:'{"translate":"bps_tcg.back","italic":false,"color":"white"}'}}>, 1,  function() {
+            eval tablePages.goToPage("main_menu")
+        }))
+
+# Battle Menu Logic
+eval battle.onEnter = function() {
+    set @s->bps.data = 0
+    
+    set temp->bps.data = @s->bps.id
+    
+    using tag target @s {
+        as @a[distance=..5] if score @s bps.id = temp bps.data loot replace entity @e[tag=target,type=minecraft:armor_stand,distance=..0.1] weapon.mainhand loot bps_tcg:get_head
+    }
+    
+    set bps_tcg:temp~data = {id:0,skull:{}}
+    
+    set bps_tcg:temp~data.skull = @s.HandItems[0].tag.SkullOwner
+    set @s.ArmorItems[0].tag.bps_tcg.name = @s.HandItems[0].tag.SkullOwner.Name
+    replaceitem entity @s weapon.mainhand air
+    
+    
+    store result storage bps_tcg:temp data.id int 1 scoreboard players get @s bps.id
+    
+    data modify storage bps_tcg:table active append from storage bps_tcg:temp data
+    
+    as @e[tag=bps.gui,type=minecraft:armor_stand,tag=bps.open] if score @s bps.page matches ${tablePages.getPage("battle").uuid} at @s function bps_tcg:gui/table/display_active_tables
+}
+eval battle.onRender = function() {
+    function bps_tcg:gui/table/handle_active_tables
+}
+eval battle.onExit = function() {
+    eval ArrayUtil.remove(pointer<@s->bps.id>, pointer<bps_tcg:table~active>)
+    
+    as @e[tag=bps.gui,type=minecraft:armor_stand,tag=bps.open] if score @s bps.page matches ${tablePages.getPage("battle").uuid} at @s function bps_tcg:gui/table/display_active_tables
+}
+
+eval battle.add(0, new Button(item<minecraft:arrow{gui:1b,display:{Name:'{"translate":"bps_tcg.up","italic":false}'}}>, 1, function() {
+            if score @s bps.data matches 1.. function {
+                set @s->bps.data -= 1
+                function bps_tcg:gui/table/display_active_tables
+            }
+        }))
+eval battle.add(9, new Button(item<minecraft:arrow{gui:1b,display:{Name:'{"translate":"bps_tcg.back","italic":false}'}}>, 1, function() {
+            eval tablePages.goToPage("main_menu")
+        }))
+eval battle.add(18, new Button(item<minecraft:arrow{gui:1b,display:{Name:'{"translate":"bps_tcg.down","italic":false}'}}>, 1, function() {
+            if score @s bps.data matches ..3 function {
+                set @s->bps.data += 1
+                function bps_tcg:gui/table/display_active_tables
+            }
+        }))
+
+# Main Menu Logic
+eval mainMenu.add(12, new Button(item<chest{gui:1b,display:{Name:'{"translate":"bps_tcg.deck","italic":false}'}}>, 1, function() {
+            eval tablePages.goToPage("deck")
+        }))
+eval mainMenu.add(13, new Button(item<iron_sword{gui:1b,HideFlags:127,display:{Name:'{"translate":"bps_tcg.battle","italic":false}'}}>, 1, function() {
+            eval tablePages.goToPage("battle")
+        }))
+eval mainMenu.add(14, new Button(item<paper{gui:1b,display:{Name:'{"translate":"bps_tcg.packs","italic":false}'}}>, 1, function() {
+            eval tablePages.goToPage("packs")
+        }))
+
+
+eval deck.init("deck", tablePages)
+eval packs.init("packs", tablePages)
+eval battle.init("battle", tablePages)
+eval mainMenu.init("main_menu", tablePages)
+
+eval tablePages.generateEvents()

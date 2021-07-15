@@ -1,0 +1,16 @@
+{
+  "criteria": {
+    "interact": {
+      "trigger": "minecraft:player_interacted_with_entity",
+      "conditions": {
+        "entity": {
+          "type": "minecraft:armor_stand",
+          "nbt": "{Tags:[\"bps.card_display\"]}"
+        }
+      }
+    }
+  },
+  "rewards": {
+    "function": "bps_tcg:player/card_interact"
+  }
+}
