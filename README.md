@@ -32,5 +32,5 @@ process easier)
 ### Help with the python script
 1) You need to install [PIL](https://pypi.org/project/Pillow/)
 2) You may need to install curl, to find this out open a Terminal/Command Prompt and type ``curl``
-2a) 	If you get a message saying unknown command/applet, go [here](https://stackoverflow.com/a/16216825)
-2b) 	If you get a message asking for a ``Uri`` or another parameter, then you have curl!
+   - If you get a message saying unknown command/applet, go [here](https://stackoverflow.com/a/16216825)
+   - If you get a message asking for a ``Uri`` or another parameter, then you have curl!
