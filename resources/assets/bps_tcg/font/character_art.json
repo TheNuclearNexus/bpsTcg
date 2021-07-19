@@ -1,0 +1,14 @@
+{
+    "providers": [
+        {
+            "_name": "character art for the der discohund",
+            "type": "bitmap",
+            "file": "cards:font/character_art/the_der_discohund.png",
+            "ascent": 3,
+            "height": 48,
+            "chars": [
+                "\u0001"
+            ]
+        }
+    ]
+}

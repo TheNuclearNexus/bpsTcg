@@ -14,10 +14,10 @@ for(var o = 0; o < 4; o++) {
             do if(slot >= 16) eval slot += 4
             
             replaceitem block ~ ~ ~ ${"container." + slot} minecraft:white_stained_glass_pane{gui:1b,display:{Name:'{"text":""}'}}
-            if data storage bps_tcg:player temp.deck[{d:${(tag_int)p}}] function ${Reflection.getWritingFile().resolve("set_" + p)}{
+            if data storage bps_tcg:player temp.deck[${p}] function ${Reflection.getWritingFile().resolve("set_" + p)}{
                 replaceitem block ~ ~ ~ ${"container." + slot} clock{tag:{gui:1b}} 1
-                set (~ ~ ~).Items[{Slot:${(tag_byte)slot}}].tag.bps_tcg.id = bps_tcg:player~temp.deck[{d:${(tag_int)p}}].id
-                set (~ ~ ~).Items[{Slot:${(tag_byte)slot}}].tag = bps_tcg:player~temp.deck[{d:${(tag_int)p}}].tag
+                set (~ ~ ~).Items[{Slot:${(tag_byte)slot}}].tag.bps_tcg.id = bps_tcg:player~temp.deck[${p}].id
+                set (~ ~ ~).Items[{Slot:${(tag_byte)slot}}].tag = bps_tcg:player~temp.deck[${p}].tag
                 set (~ ~ ~).Items[{Slot:${(tag_byte)slot}}].tag.gui = 1b
             }
         }

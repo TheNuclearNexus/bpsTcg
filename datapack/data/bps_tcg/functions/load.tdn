@@ -1,4 +1,6 @@
 @tag load
+@require bps_tcg:cards
+@using_plugin bps
 
 tellraw @a [{"text":"Loaded!"}]
 
@@ -18,3 +20,44 @@ bossbar set bps_tcg.not_turn value 1
 bossbar set bps_tcg.not_turn max 1
 bossbar set bps_tcg.not_turn visible true
 bossbar set bps_tcg.not_turn color red
+
+unless score cardVersion bps.data isset set cardVersion->bps.data = $cardVersion
+unless score cardVersion bps.data matches $cardVersion function update_decks {
+    set cardVersion->bps.data = $cardVersion
+    set bps_tcg:temp~players = bps_tcg:player~data
+    set bps_tcg:player~data = []
+    
+    set lenP->bps.data = bps_tcg:temp~players
+    
+    function per_player {
+        set bps_tcg:temp~player = bps_tcg:temp~players[0]
+        set bps_tcg:temp~players[0] = null
+        
+        set bps_tcg:temp~deck = bps:temp~player.deck
+        set lenD->bps.data = bps_tcg:temp~deck
+        
+        function per_card {
+            set bps_tcg:temp~data = bps_tcg:temp~deck[0]
+            set bps_tcg:temp~deck[0] = null
+            
+            function bps_tcg:cards/update_card
+            modify bps_tcg:temp~desk =+ bps_tcg:temp~data
+            
+            set lenD->bps.data -= 1
+            if score lenD bps.data matches 1.. function /
+        }
+        
+        set bps_tcg:temp~player.deck = bps:temp~deck
+        modify bps_tcg:temp~players =+ bps_tcg:temp~player
+        
+        set lenP->bps.data -= 1
+        if score lenP bps.data matches 1.. function /
+    }
+    
+    set bps_tcg:player~data = bps_tcg:temp~players
+    
+    set bps_tcg:temp~players = null
+    set bps_tcg:temp~data = null
+    set bps_tcg:temp~deck = null
+    set bps_tcg:temp~player = null
+}

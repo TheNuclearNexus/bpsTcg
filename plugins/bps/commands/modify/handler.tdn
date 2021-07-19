@@ -1,0 +1,37 @@
+var target : pointer = args["target"]
+var operation : string = args["operation"][0] + args["operation"][2]
+var index : int = operation == "//" ? args["index"] : 0
+var source = args["source"]
+var cmd : string = "data modify "
+
+var getDataholder : function = function(pointer : pointer) : string {
+    switch(type_definition.of(pointer.target)) {
+        case type_definition<resource>: {
+            return "storage"
+        }
+        case type_definition<coordinates>: {
+            return "block"
+        }
+        case type_definition<entity>: {
+            return "entity"
+        }
+    }
+}
+
+eval cmd += getDataholder(target) + " "
+
+do if(type_definition.of(target.member) == type_definition<string>) throw "Scores are not accepted!"
+eval cmd += (string)target.target + " " + target.member + " "
+
+do if(operation == "=+") eval cmd += "append "
+else if(operation == "+=") eval cmd += "prepend "
+else if(operation == "<<") eval cmd += "merge "
+else if(operation == "//") eval cmd += "insert " + index + " "
+
+do if(type_definition.of(source) == type_definition<pointer>) {
+    eval cmd += "from " + getDataholder(source) + " " + source.target + " " + source.member
+} else {
+    eval cmd += "value " + source
+}
+
+/$cmd

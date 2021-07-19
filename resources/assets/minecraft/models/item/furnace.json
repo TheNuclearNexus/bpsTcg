@@ -1,0 +1,11 @@
+{
+    "parent": "block/furnace",
+    "overrides": [
+       {
+            "predicate": {
+                "custom_model_data": 4258998
+            },
+            "model": "bps_tcg:block/table"
+        }
+    ]
+}

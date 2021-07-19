@@ -1,0 +1,16 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "bps_tcg:tcg_table"
+      }
+    }
+  },
+  "rewards": {
+    "function": "bps_tcg:player/craft_table",
+    "loot": [
+      "bps_tcg:block/tcg_table"
+    ]
+  }
+}

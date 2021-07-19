@@ -1,0 +1,54 @@
+{
+    "providers": [
+        {
+            "_name": "generic card frame",
+            "type": "bitmap",
+            "file": "bps_tcg:font/card_overlay.png",
+            "ascent": 15,
+            "height": 150,
+            "chars": [
+                "\u0001"
+            ]
+        },
+        {
+            "_name": "space back to start of card",
+            "type": "bitmap",
+            "file": "bps_tcg:font/card_overlay.png",
+            "ascent": -30000,
+            "height": -154,
+            "chars": [
+                "\u0002"
+            ]
+        },
+        {
+            "_name": "space to start of line",
+            "type": "bitmap",
+            "file": "bps_tcg:font/card_overlay.png",
+            "ascent": -30000,
+            "height": 8,
+            "chars": [
+                "\u0003"
+            ]
+        },
+        {
+            "_name": "item line prefix",
+            "type": "bitmap",
+            "file": "bps_tcg:font/internal/space_generic.png",
+            "ascent": -30000,
+            "height": -10,
+            "chars": [
+                "\u0004"
+            ]
+        },
+        {
+            "_name": "character art prefix",
+            "type": "bitmap",
+            "file": "bps_tcg:font/internal/space_generic.png",
+            "ascent": -30000,
+            "height": 4,
+            "chars": [
+                "\u0005"
+            ]
+        }
+    ]
+}

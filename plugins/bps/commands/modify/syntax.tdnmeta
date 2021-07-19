@@ -1,0 +1,26 @@
+return group(
+    POINTER.storeVar("target").hint("Data to modify"),
+    group(
+        choice(
+            group(
+                literal("="), GLUE, literal("+")
+            ).storeFlat("operation").hint("Append (=+)"),
+            group(
+                literal("+"), GLUE, literal("=")
+            ).storeFlat("operation").hint("Prepend (+=)"),
+            group(
+                literal("<"), GLUE, literal("<")
+            ).storeFlat("operation").hint("Merge (<<)"),
+            group(
+                group(
+                    literal("/"), GLUE, literal("/")
+                ).storeFlat("operation").hint("Insert (//)"),
+                INTEGER.storeVar("index").hint("Index")
+            )
+        )
+    ),
+    choice(
+        POINTER.storeVar("source").hint("Data to get"),
+        NBT_COMPOUND.storeVar("source")
+    )
+);

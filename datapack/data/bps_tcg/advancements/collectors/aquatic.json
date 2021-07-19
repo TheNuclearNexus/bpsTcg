@@ -1,0 +1,21 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:water_bucket"
+    },
+    "title": {
+        "translate": "bps_tcg.advancements.aquatic"
+    },
+    "description": {
+        "translate": "bps_tcg.advancements.aquatic.desc"
+    },
+    "frame": "goal",
+    "hidden": false
+  },
+  "criteria": {
+  },
+    "rewards":{
+        "function":"bps_tcg:cards/grant_a"
+    },
+    "parent":"bps_tcg:collectors/fever"
+}

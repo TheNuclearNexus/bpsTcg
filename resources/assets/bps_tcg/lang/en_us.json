@@ -23,5 +23,24 @@
     "bps_tcg.phase.end": "§6Begin §fEnd §6Phase",
     "bps_tcg.insufficient_mana": "Insufficient %s mana to play card!\n   Need: %s\n   Have: %s",
     "bps_tcg.your_turn": "Your turn!",
-    "bps_tcg.not_your_turn": "Not your turn!"
+    "bps_tcg.not_your_turn": "Not your turn!",
+    "bps_tcg.pack": "%s Pack",
+    
+    
+    
+    "bps_tcg.advancements.start": "So the addiction begins..",
+    "bps_tcg.advancements.start.desc": "Craft the %s!",
+    "bps_tcg.advancements.fever": "Collector's fever!",
+    "bps_tcg.advancements.fever.desc": "Collect ALL cards!",
+    
+    "bps_tcg.advancements.aquatic": "Drowning in cards!",
+    "bps_tcg.advancements.aquatic.desc": "Collect all 'Aquatic' cards!",
+    "bps_tcg.advancements.hellish": "We're burning alive in here!",
+    "bps_tcg.advancements.hellish.desc": "Collect all 'Hellish' cards!",
+    "bps_tcg.advancements.undead": "You only die once... normally",
+    "bps_tcg.advancements.undead.desc": "Collect all 'Undead' cards!",
+    "bps_tcg.advancements.ender": "Unnatural prescense...",
+    "bps_tcg.advancements.ender.desc": "Collect all 'Ender' cards!",
+    "bps_tcg.advancements.terrestrial": "Organic and grass fed cardstock!",
+    "bps_tcg.advancements.terrestrial.desc": "Collect all 'Terrestrial' cards!"
 }

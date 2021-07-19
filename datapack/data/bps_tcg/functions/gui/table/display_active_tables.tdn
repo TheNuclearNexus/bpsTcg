@@ -8,7 +8,7 @@ for(var o = 0; o < 4; o++) {
                 if data storage bps_tcg:table active[$table] function ${Reflection.getWritingFile().resolve("set_" + table)} {
                     set bps_tcg:table~temp = bps_tcg:table~active[$table].skull.Name
                     
-                    loot replace block ~ ~ ~ ${"container." + slot} loot bps_tcg:set_head_name
+                    loot replace block ~ ~ ~ ${"container." + slot} loot bps_tcg:technical/set_head_name
                     set (~ ~ ~).Items[{Slot:${(tag_byte)slot}}].tag.SkullOwner = bps_tcg:table~active[$table].skull
                     set (~ ~ ~).Items[{Slot:${(tag_byte)slot}}].tag.bps_tcg.id = bps_tcg:table~active[$table].id
                 }

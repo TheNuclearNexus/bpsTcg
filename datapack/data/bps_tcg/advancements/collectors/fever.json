@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:bookshelf"
+    },
+    "title": {
+        "translate": "bps_tcg.advancements.fever"
+    },
+    "description": {
+        "translate": "bps_tcg.advancements.fever.desc"
+    },
+    "frame": "challenge",
+    "hidden": false
+  },
+  "criteria": {
+        "a": {"trigger":"minecraft:impossible","conditions":{}},
+        "h": {"trigger":"minecraft:impossible","conditions":{}},
+        "u": {"trigger":"minecraft:impossible","conditions":{}},
+        "e": {"trigger":"minecraft:impossible","conditions":{}},
+        "t": {"trigger":"minecraft:impossible","conditions":{}}
+  },
+"parent":"bps_tcg:collectors/root"
+}

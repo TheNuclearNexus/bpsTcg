@@ -1,0 +1,21 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:oak_sapling"
+    },
+    "title": {
+        "translate": "bps_tcg.advancements.aquatic"
+    },
+    "description": {
+        "translate": "bps_tcg.advancements.aquatic.desc"
+    },
+    "frame": "goal",
+    "hidden": false
+  },
+  "criteria": {
+  },
+    "rewards":{
+        "function":"bps_tcg:cards/grant_t"
+    },
+    "parent":"bps_tcg:collectors/fever"
+}

@@ -1,0 +1,38 @@
+{
+    "parent": "item/handheld_rod",
+    "textures": {
+        "layer0": "item/carrot_on_a_stick"
+    },
+    "overrides": [
+       {
+            "predicate": {
+                "custom_model_data": 4259000
+            },
+            "model": "bps_tcg:packs/aquatic_pack"
+        },
+        {
+            "predicate": {
+                "custom_model_data": 4259001
+            },
+            "model": "bps_tcg:packs/hellish_pack"
+        },
+        {
+            "predicate": {
+                "custom_model_data": 4259002
+            },
+            "model": "bps_tcg:packs/undead_pack"
+        },
+        {
+            "predicate": {
+                "custom_model_data": 4259003
+            },
+            "model": "bps_tcg:packs/ender_pack"
+        },
+        {
+            "predicate": {
+                "custom_model_data": 4259004
+            },
+            "model": "bps_tcg:packs/terrestrial_pack"
+        }
+    ]
+}

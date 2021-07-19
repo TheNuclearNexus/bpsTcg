@@ -1,5 +1,5 @@
 define function hand {
-    loot replace entity @s weapon.mainhand loot bps_tcg:random
+    loot replace entity @s weapon.mainhand loot bps_tcg:technical/random
     store result score out bps.data data get entity @s HandItems[0].tag.AttributeModifiers[0].Amount 2000000
     replaceitem entity @s weapon.mainhand air
     

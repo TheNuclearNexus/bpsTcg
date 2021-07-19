@@ -1,0 +1,3 @@
+clear @s minecraft:knowledge_book 1
+advancement revoke @s only bps_tcg:craft_table
+recipe take @s bps_tcg:tcg_table

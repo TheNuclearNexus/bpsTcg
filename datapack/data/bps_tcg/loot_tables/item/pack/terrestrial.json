@@ -1,0 +1,19 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:carrot_on_a_stick",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{bps_tcg:{pack:1b,type:\"Terrestrial\"},CustomModelData:4259004,display:{Name:'{\"translate\":\"bps_tcg.pack\",\"color\":\"yellow\",\"italic\":false,\"with\":[{\"text\":\"Terrestrial\"}]}'}}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

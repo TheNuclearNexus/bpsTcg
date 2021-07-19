@@ -20,10 +20,10 @@ eval deck.add(8, new Button(item<minecraft:tnt{gui:1b,display:{Name:'{"translate
             set in->bps.data = @s->bps.id
             /function bps_tcg:player/data/get
             for(var i = 0; i < 60; i++) {
-                if data storage bps_tcg:player out.deck[{d:${(tag_int)i}}] function ${Reflection.getWritingFile().resolve("drop_" + i)} {
+                if data storage bps_tcg:player out.deck[${i}] function ${Reflection.getWritingFile().resolve("drop_" + i)} {
                     using summon item ~ ~ ~ {PickupDelay:10s,Item:{id:"minecraft:stone",Count:1b,tag:{}}} with target {
-                        set @s.Item.id = bps_tcg:player~out.deck[{d:${(tag_int)i}}].id
-                        set @s.Item.tag = bps_tcg:player~out.deck[{d:${(tag_int)i}}].tag
+                        set @s.Item.id = bps_tcg:player~out.deck[${i}].id
+                        set @s.Item.tag = bps_tcg:player~out.deck[${i}].tag
                     }
                 }
             }
@@ -60,7 +60,7 @@ eval deck.onRender = function() {
         set in->bps.data = @s->bps.id
         /function bps_tcg:player/data/get
         
-        store result score temp bps.data data get storage bps_tcg:player out.deck 1
+       set temp->bps.data = bps_tcg:player~out.deck
        
         unless data block ~ ~ ~ {Items:[{Slot:9b,tag:{bps_tcg:{card:1b}}}]} function {
             set bps_tcg:temp~block = (~ ~ ~).Items[{Slot:9b}]
@@ -73,15 +73,20 @@ eval deck.onRender = function() {
         }
          
         if score temp bps.data matches ..59 if data block ~ ~ ~ {Items:[{Slot:9b,tag:{bps_tcg:{card:1b}}}]} function {
-            data modify storage bps_tcg:player out.deck append from block ~ ~ ~ Items[{Slot:9b}]
+            bps:modify bps_tcg:player~out.deck =+ (~ ~ ~).Items[{Slot:9b}]
+            
             set bps_tcg:player~out.deck[-1].Slot = null
             set bps_tcg:player~out.deck[-1].Count = null
             
-            store result storage bps_tcg:player out.deck[-1].d int 1 scoreboard players get temp bps.data
+            set bps_tcg:temp~data = bps_tcg:player~out.deck[-1]
+            function bps_tcg:cards/update_card
+            set bps_tcg:player~out.deck[-1].tag = bps_tcg:temp~data.tag
             
-            store result score temp bps.data data get block ~ ~ ~ Items[{Slot:9b}].Count
+            set temp->bps.data = (~ ~ ~).Items[{Slot:9b}].Count
+            
             set temp->bps.data -= 1
-            store result block ~ ~ ~ Items[{Slot:9b}].Count byte 1 scoreboard players get temp bps.data
+            
+            set (~ ~ ~).Items[{Slot:9b}].Count (byte) = temp->bps.data
             
             set bps_tcg:player~in = bps_tcg:player~out
             /function bps_tcg:player/data/set
@@ -105,8 +110,8 @@ var sellPack : function = function(amount : int, loot : resource) {
     }
 }
 
-eval packs.add(10, new Button(item<minecraft:grass_block{gui:1b,display:{Name:'{"translate":"bps_tcg.lands","italic":false,"color":"white"}',Lore:['[{"translate":"item.minecraft.diamond","italic":false,"color":"aqua"}, " x5"]']}}>, 1,  function() {eval sellPack(5, resource<bps_tcg:cards/lands>)}))
-eval packs.add(13, new Button(item<minecraft:player_head{gui:1b,display:{Name:'{"translate":"bps_tcg.units","italic":false,"color":"white"}',Lore:['[{"translate":"item.minecraft.diamond","italic":false,"color":"aqua"}, " x10"]']}}>, 1, function() {eval sellPack(10, resource<bps_tcg:cards/units>)}))
+eval packs.add(10, new Button(item<minecraft:grass_block{gui:1b,display:{Name:'{"translate":"bps_tcg.lands","italic":false,"color":"white"}',Lore:['[{"translate":"item.minecraft.diamond","italic":false,"color":"aqua"}, " x5"]']}}>, 1,  function() {eval sellPack(5, resource<bps_tcg:technical/cards/lands>)}))
+eval packs.add(13, new Button(item<minecraft:player_head{gui:1b,display:{Name:'{"translate":"bps_tcg.units","italic":false,"color":"white"}',Lore:['[{"translate":"item.minecraft.diamond","italic":false,"color":"aqua"}, " x10"]']}}>, 1, function() {eval sellPack(10, resource<bps_tcg:technical/cards/units>)}))
 eval packs.add(16, new Button(item<minecraft:creeper_head{gui:1b,display:{Name:'{"translate":"bps_tcg.mobs","italic":false,"color":"white"}',Lore:['[{"translate":"item.minecraft.diamond","italic":false,"color":"aqua"}, " x7"]']}}>, 1,  function() {eval sellPack(7, resource<minecraft:blocks/potatoes>)}))
 eval packs.add(18, new Button(item<minecraft:arrow{gui:1b,display:{Name:'{"translate":"bps_tcg.back","italic":false,"color":"white"}'}}>, 1,  function() {
             eval tablePages.goToPage("main_menu")
@@ -119,7 +124,7 @@ eval battle.onEnter = function() {
     set temp->bps.data = @s->bps.id
     
     using tag target @s {
-        as @a[distance=..5] if score @s bps.id = temp bps.data loot replace entity @e[tag=target,type=minecraft:armor_stand,distance=..0.1] weapon.mainhand loot bps_tcg:get_head
+        as @a[distance=..5] if score @s bps.id = temp bps.data loot replace entity @e[tag=target,type=minecraft:armor_stand,distance=..0.1] weapon.mainhand loot bps_tcg:technical/get_head
     }
     
     set bps_tcg:temp~data = {id:0,skull:{}}

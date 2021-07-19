@@ -15,5 +15,8 @@
     "timestamp-enabled": true,
     "pos-enabled": true,
     "line-number-enabled": false
-  }
+  },
+  "use-plugins": [
+    "bps"
+  ]
 }

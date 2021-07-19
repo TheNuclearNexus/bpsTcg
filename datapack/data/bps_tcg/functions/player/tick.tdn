@@ -1,4 +1,6 @@
 @language_level 2
+@require bps_tcg:cards
+
 unless score @s bps.id isset function {
     set @s->bps.id = GlobalID->bps.id
     set GlobalID->bps.id += 1
@@ -11,12 +13,50 @@ unless score @s bps.id isset function {
 }
 
 
-if entity @s[tag=bps.battling] function in_battle {
-    
+if score @s bps.coas matches 1.. function use_coas {
+    set @s->bps.coas = 0
+    set bps_tcg:temp~data = @s.SelectedItem
+    if data storage bps_tcg:temp {data:{tag:{bps_tcg:{pack:1b}}}}  function use_pack {
+        if data storage bps_tcg:temp {data:{tag:{bps_tcg:{type:"Aquatic"}}}} loot spawn ~ ~ ~ loot bps_tcg:technical/packs/aquatic
+        if data storage bps_tcg:temp {data:{tag:{bps_tcg:{type:"Hellish"}}}} loot spawn ~ ~ ~ loot bps_tcg:technical/packs/hellish
+        if data storage bps_tcg:temp {data:{tag:{bps_tcg:{type:"Undead"}}}} loot spawn ~ ~ ~ loot bps_tcg:technical/packs/undead
+        if data storage bps_tcg:temp {data:{tag:{bps_tcg:{type:"Ender"}}}} loot spawn ~ ~ ~ loot bps_tcg:technical/packs/ender
+        if data storage bps_tcg:temp {data:{tag:{bps_tcg:{type:"Terrestrial"}}}} loot spawn ~ ~ ~ loot bps_tcg:technical/packs/terrestrial
+        replaceitem entity @s[gamemode=!creative] weapon.mainhand air
+        playsound minecraft:item.armor.equip_leather master @s
+    }
 }
 
 tag @s remove bps.sneak
 if score @s bps.sneak matches 1.. function {
     tag @s add bps.sneak
     set @s->bps.sneak = null
+}
+
+scoreboard players enable @s bps.update_cards
+
+if score @s bps.update_cards matches 1 function update_cards {
+    set @s->bps.update_cards = 0
+    
+    set bps_tcg:temp~inventory = @s.Inventory
+    clear @s #nexus:all{bps_tcg:{}}
+    
+    set len->bps.data = bps_tcg:temp~inventory
+    function iter {
+        set bps_tcg:temp~data = bps_tcg:temp~inventory[0]
+        set bps_tcg:temp~inventory[0] = null
+        
+        if data storage bps_tcg:temp {data:{tag:{bps_tcg:{card:1b}}}} function update {
+            function bps_tcg:cards/update_card
+            
+            using summon minecraft:item ~ ~ ~ {Item:{id:"minecraft:stone",Count:1b,tag:{}},PickupDelay:0s} with target {
+                set @s.Item.id = bps_tcg:temp~data.id
+                set @s.Item.tag = bps_tcg:temp~data.tag
+                set @s.Item.Count = bps_tcg:temp~data.Count
+            }
+        }
+        
+        set len->bps.data -= 1
+        if score len bps.data matches 1.. function /
+    }
 }

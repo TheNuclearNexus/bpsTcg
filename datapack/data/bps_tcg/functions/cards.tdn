@@ -1,158 +1,114 @@
-define class Card {
-    public var name : string
-    public var desc : string
-    public var type : string
-    public var class : string
-    public var power : int
-    public var health : int
-    public var roll : int
-    public var cost : int
-    public var rarity : string
-    public var cmd : int
-    
-    public new(name : string, desc : string, type : string, class : string, power : int, health : int, roll : int, cost : int, rarity : string, cmd : int) {
-        eval this.name = name
-        eval this.desc = desc
-        eval this.type = type
-        eval this.class = class
-        eval this.power = power
-        eval this.health = health
-        eval this.roll = roll
-        eval this.cost = cost
-        eval this.rarity = rarity
-        eval this.cmd = cmd
-    }
-    
-    public toItem() : item {
-        var color : string = "white"
-        switch(type) {
-            case "Aquatic": {
-                eval color = "blue"
-                break
-            }
-            case "Hellish": {
-                eval color = "red"
-                break
-            }
-            case "Undead": {
-                eval color = "dark_gray"
-                break
-            }
-            case "Ender": {
-                eval color = "dark_purple"
-                break
-            }
-            case "Terrestrial": {
-                eval color = "green"
-                break
-            }
-        }
-        
-        var lore : list = []
-        
-        do if(class == "Unit") {
-            eval lore = [
-                text_component<[{"text":$desc,"italic": false,"color":"gray"}]>,
-                '[{"text":"--- ","italic": false,"color":"dark_gray"},{"text":"Info","italic": false,"color":"white"}," ---"]',
-                text_component<[{"text":"Class: ", "color":"gold","italic":false},{"text":$class,"color":"white"}]>,
-                text_component<[{"text":"Rarity: ", "color":"gold","italic":false},{"text":$rarity,"color":"white"}]>,
-                '[{"text":"--- ","italic": false,"color":"dark_gray"},{"text":"Stats","italic": false,"color":"white"}," ---"]',
-                text_component<[{"text":"Health: ", "color":"gold","italic":false},{"text":$health,"color":"white"}]>,
-                text_component<[{"text":"Power: ", "color":"gold","italic":false},{"text":$power,"color":"white"}]>,
-                text_component<[{"text":"Roll: ", "color":"gold","italic":false},{"text":$roll,"color":"white"}]>,
-                text_component<[{"text":"Cost: ", "color":"gold","italic":false},{"text":$cost,"color":"white"}]>
-            ]
-        } else if (class == "Land") {
-            eval lore = [
-                text_component<[{"text":$desc,"italic": false,"color":"gray"}]>,
-                '[{"text":"--- ","italic": false,"color":"dark_gray"},{"text":"Info","italic": false,"color":"white"}," ---"]',
-                text_component<[{"text":"Class: ", "color":"gold","italic":false},{"text":$class,"color":"white"}]>,
-                text_component<[{"text":"Rarity: ", "color":"gold","italic":false},{"text":$rarity,"color":"white"}]>
-            ]
-        }
-        
-        
-        
-        return item<clock#$cmd{
-            bps_tcg:{
-                card:1b,
-                name: ${(tag_string)name},
-                desc: ${(tag_string)desc},
-                type: ${(tag_string)type},
-                class: ${(tag_string)class},
-                power: ${(tag_int)power},
-                max_health: ${(tag_int)health},
-                health: ${(tag_int)health},
-                roll: ${(tag_int)roll},
-                cost: ${(tag_int)cost}
-            },
-            display:{
-                Name:${
-                    text_component<[{"text":${"- " + name + " -"},"italic":false,"color":$color}]>
-                },
-                Lore: ${new nbt(lore)}
-            }
-        }>
-    }
-}
-
-var content : string = File.in.read("other/bps_cards.tsv")
-var lines : TypedList<string> = new TypedList<string>(content.split('\n'))
-var cards : TypedList<Card> = new TypedList<Card>()
-var lands : TypedList<int> = new TypedList<int>()
-var units : TypedList<int> = new TypedList<int>()
-var mobs : TypedList<int> = new TypedList<int>()
-var modelOffset : int = 4259000
-
-var aC : int = 0
-var hC : int = 0
-var uC : int = 0
-var eC : int = 0
-var cC : int = 0
-var tC : int = 0
+@require bps_tcg:cards.d
 
 for(var i = 1; i < lines.length; i++) {
     var values : TypedList<string> = new TypedList<string>(lines[i].split('\t'))
+    var c = new Card(
+        name: values[0],
+        desc: values[1],
+        type: values[2],
+        class: values[3],
+        power: Integer.parseInt(values[4]),
+        health: Integer.parseInt(values[5]),
+        roll: Integer.parseInt(values[6]),
+        cost: Integer.parseInt(values[7]),
+        rarity: values[8],
+        cmd: modelOffset + i
+    )
+    var rewardFunc : resource = Reflection.getWritingFile().resolve("rewards/" + c.id)
+    eval File.out.writeData("data/bps_tcg/advancements/collectors/cards/" + c.id + ".json", JSON.stringify({
+                "display": {
+                    "icon": {
+                        "item": "minecraft:clock",
+                        "nbt": "{CustomModelData:" + c.cmd + "}"
+                    },
+                    "title": {
+                        "text": c.name
+                    },
+                    "description": {
+                        "text": c.desc
+                    },
+                    "show_toast": true,
+                    "announce_to_chat": false,
+                    "frame": "task",
+                    "hidden": false
+                },
+                "criteria": {
+                    "requirement": {
+                        "trigger": "minecraft:inventory_changed",
+                        "conditions": {
+                            "items": [
+                                {
+                                    "items": [
+                                        "minecraft:clock"
+                                    ],
+                                    "nbt": "{bps_tcg:{id:" + c.id + "}}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "rewards":{
+                    "function": rewardFunc
+                },
+                "parent": "bps_tcg:collectors/" + c.type.toLowerCase()
+            }
+        )
+    )
+    
+    eval File.out.writeData("data/bps_tcg/advancements/collectors/cards/" + c.id + "_child.json", JSON.stringify({
+                "criteria": {
+                    "tick":{
+                        "trigger":"tick",
+                        "conditions":{}
+                    }
+                },
+                "parent": "bps_tcg:collectors/cards/" + c.id
+            }
+        )
+    )
+
+    define function ${rewardFunc} {
+        /${"advancement grant @s only bps_tcg:collectors/" + c.type.toLowerCase() + " " + c.id}
+    }
     
     switch(values[2]) {
         case "Aquatic": {
             eval aC++
+            eval typedCards[0].add(i - 1)
+            eval aAdv["criteria"][(string)c.id] = emptyCriteria
             break
         }
         case "Hellish": {
             eval hC++
+            eval typedCards[1].add(i - 1)
+            eval hAdv["criteria"][(string)c.id] = emptyCriteria
             break
         }
         case "Undead": {
             eval uC++
+            eval typedCards[2].add(i - 1)            
+            eval uAdv["criteria"][(string)c.id] = emptyCriteria
             break
         }
         case "Ender": {
             eval eC++
+            eval typedCards[3].add(i - 1)            
+            eval eAdv["criteria"][(string)c.id] = emptyCriteria
             break
         }
         case "CUM": {
             eval cC++
+            eval typedCards[5].add(i - 1)            
             break
         }
         case "Terrestrial": {
             eval tC++
+            eval typedCards[4].add(i - 1)            
+            eval tAdv["criteria"][(string)c.id] = emptyCriteria
             break
         }
     }
     
-    var c = new Card(
-            name: values[0],
-            desc: values[1],
-            type: values[2],
-            class: values[3],
-            power: Integer.parseInt(values[4]),
-            health: Integer.parseInt(values[5]),
-            roll: Integer.parseInt(values[6]),
-            cost: Integer.parseInt(values[7]),
-            rarity: values[8],
-            cmd: modelOffset + i
-        )
     
     eval cards.add(c)
     
@@ -172,73 +128,75 @@ for(var i = 1; i < lines.length; i++) {
     }
 }
 
+eval File.out.writeData('data/bps_tcg/advancements/collectors/aquatic.json', JSON.stringify(aAdv))
+eval File.out.writeData('data/bps_tcg/advancements/collectors/hellish.json', JSON.stringify(hAdv))
+eval File.out.writeData('data/bps_tcg/advancements/collectors/undead.json', JSON.stringify(uAdv))
+eval File.out.writeData('data/bps_tcg/advancements/collectors/ender.json', JSON.stringify(eAdv))
+eval File.out.writeData('data/bps_tcg/advancements/collectors/terrestrial.json', JSON.stringify(tAdv))
+
 log info "Aquatic: " + aC + "\nHellish: " + aC + "\nUndead: " + uC + "\nEnder: " + eC + "\nTerrestrial: " + tC + "\nCUM: " + cC
 log info "Units: " + units.length + "\nMobs: " + mobs.length + "\nLands: " + lands.length
 
 for(var i = 0; i <= (cards.length / 10); i++) {
     define function ${Reflection.getWritingFile().resolve("set_" + i)} {
         for(var c = i*10; c < (i+1) * 10 && c < cards.length; c++) {
-            give @s ${cards[c].toItem()}
+            give @s ${cards[c].item}
         }
     }
 }
 
 
-var genLootTable = function(input : TypedList<int>, rolls : int, path : string) {
-    var lootTable : dictionary = {
-        "pools": [
-            {
-                "rolls": rolls,
-                "entries": [
-                    
-                ]
-            }
-        ]
-    }
+eval genLootTable(units, 3, "data/bps_tcg/loot_tables/technical/cards/units.json")
+eval genLootTable(lands, 5, "data/bps_tcg/loot_tables/technical/cards/lands.json")
 
+eval genPackLootTable(typedCards[0], "data/bps_tcg/loot_tables/technical/packs/aquatic.json")
+eval genPackLootTable(typedCards[1], "data/bps_tcg/loot_tables/technical/packs/hellish.json")
+eval genPackLootTable(typedCards[2], "data/bps_tcg/loot_tables/technical/packs/undead.json")
+eval genPackLootTable(typedCards[3], "data/bps_tcg/loot_tables/technical/packs/ender.json")
+eval genPackLootTable(typedCards[4], "data/bps_tcg/loot_tables/technical/packs/terrestrial.json")
+eval cards.sort()
 
-    for(u in input) {
-        var weight : int = 200
-        switch(cards[u].rarity) {
-            case "Common": {
-                eval weight = 250
-                break
-            }
-            case "Uncommon": {
-                eval weight = 200
-                break
-            }
-            case "Rare": {
-                eval weight = 150
-                break
-            }
-            case "Legendary": {
-                eval weight = 75
-                break
-            }
-            case "Ultra Legendary": {
-                eval weight = 25
-                break
-            }
+define function update_card {
+    var bst : function = function(low : int, high : int) {
+        do if(low == high) {
+            if score temp bps.data matches ${cards[low ].id} set bps_tcg:temp~data.tag = ${cards[low ].item.itemTag}
+        } else if(low + 1 == high) {
+            if score temp bps.data matches ${cards[low ].id} set bps_tcg:temp~data.tag = ${cards[low ].item.itemTag}
+            if score temp bps.data matches ${cards[high].id} set bps_tcg:temp~data.tag = ${cards[high].item.itemTag}
+        } else {
+            var mid : int = (low + high) / 2
+            if score temp bps.data matches ..${cards[mid].id}     function ${Reflection.getCurrentFile().resolve((string)cards[low].id     + "_" + cards[mid].id )} {eval bst(low    , mid )}
+            if score temp bps.data matches ${cards[mid + 1].id}.. function ${Reflection.getCurrentFile().resolve((string)cards[mid + 1].id + "_" + cards[high].id)} {eval bst(mid + 1, high)}
         }
-        
-        eval lootTable["pools"][0]["entries"].add(
-            {
-                "type": "minecraft:item",
-                "name": "minecraft:clock",
-                "weight": weight,
-                "functions": [
-                    {
-                        "function": "minecraft:set_nbt",
-                        "tag": (cards[u].toItem().itemTag)
-                    }
-                ]
-            }
-        )
-
     }
-    eval File.out.writeData(path, JSON.stringify(lootTable))
+    
+    set temp->bps.data = bps_tcg:temp~data.tag.bps_tcg.id
+    eval bst(0, ids.length - 1)
 }
 
-eval genLootTable(units, 3, "data/bps_tcg/loot_tables/cards/units.json")
-eval genLootTable(lands, 5, "data/bps_tcg/loot_tables/cards/lands.json")
+var cardVersion = 1
+do if(File.in.exists("other/.build_info")) {
+    var data = File.in.read("other/.build_info")
+    eval cardVersion = Integer.parseInt(data)
+}
+
+do if(File.in.wasFileChanged("other/bps_cards.tsv")) {
+    eval cardVersion++
+    eval File.in.write("other/.build_info", (string)cardVersion)
+}
+
+define function grant_a {
+    advancement grant @s only bps_tcg:collectors/fever a
+}
+define function grant_h {
+    advancement grant @s only bps_tcg:collectors/fever h
+}
+define function grant_u {
+    advancement grant @s only bps_tcg:collectors/fever u
+}
+define function grant_e {
+    advancement grant @s only bps_tcg:collectors/fever e
+}
+define function grant_t {
+    advancement grant @s only bps_tcg:collectors/fever t
+}

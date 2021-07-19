@@ -1,0 +1,21 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:rotten_flesh"
+    },
+    "title": {
+        "translate": "bps_tcg.advancements.undead"
+    },
+    "description": {
+        "translate": "bps_tcg.advancements.undead.desc"
+    },
+    "frame": "goal",
+    "hidden": false
+  },
+  "criteria": {
+  },
+    "rewards":{
+        "function":"bps_tcg:cards/grant_u"
+    },
+    "parent":"bps_tcg:collectors/fever"
+}

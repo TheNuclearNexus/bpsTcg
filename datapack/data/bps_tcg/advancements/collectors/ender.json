@@ -1,0 +1,21 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:ender_pearl"
+    },
+    "title": {
+        "translate": "bps_tcg.advancements.ender"
+    },
+    "description": {
+        "translate": "bps_tcg.advancements.ender.desc"
+    },
+    "frame": "goal",
+    "hidden": false
+  },
+  "criteria": {
+  },
+    "rewards":{
+        "function":"bps_tcg:cards/grant_e"
+    },
+    "parent":"bps_tcg:collectors/fever"
+}

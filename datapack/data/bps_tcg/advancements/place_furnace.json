@@ -1,0 +1,14 @@
+{
+    "__comment": "Made with TheDestruc7i0n's advancements generator: https://advancements.thedestruc7i0n.ca",
+    "criteria": {
+        "furnace": {
+            "trigger": "minecraft:placed_block",
+            "conditions": {
+                "block": "minecraft:furnace"
+            }
+        }
+    },
+    "rewards": {
+        "function": "bps_tcg:player/place_furnace"
+    }
+}

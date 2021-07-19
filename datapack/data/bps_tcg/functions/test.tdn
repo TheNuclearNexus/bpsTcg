@@ -1,0 +1,1 @@
+give @s minecraft:clock{CustomModelData:4259000,display:{Name:'[{"text":"","italic":false},{"text":"\\u0004","font":"bps_tcg:internal"},{"nbt":"NewCard.color","storage":"cards:temp","interpret":true},{"text":"\\u0001","font":"bps_tcg:internal"}, {"text":"\\u0002","font":"bps_tcg:internal"},{"text":"\\u0003","font":"bps_tcg:internal"},{"text":"test"}]'}}

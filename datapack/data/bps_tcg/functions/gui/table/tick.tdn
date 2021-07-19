@@ -1,12 +1,18 @@
 @priority -1
 
-if entity @s[tag=!bps.battling] function ${Reflection.getWritingFile().resolve("gui")} {
-    unless block ~ ~ ~ minecraft:barrel[facing=up] expand {
+if entity @s[tag=!bps.battling] function gui {
+    unless block ~ ~ ~ minecraft:barrel[facing=up] function break {
         kill @e[type=item,distance=..3,nbt={Item:{tag:{gui:1b}}}]
+        
+        if @e[type=item,distance=..2,nbt={Item:{id:"minecraft:barrel",Count:1b}}] function create_item {
+            loot spawn ~ ~ ~ loot bps_tcg:block/tcg_table
+            kill @e[type=item,distance=..2,nbt={Item:{id:"minecraft:barrel",Count:1b}},sort=nearest,limit=1]
+        }
+        
         kill @s
     }
     
-    if entity @s[tag=!bps.open] if block ~ ~ ~ minecraft:barrel[facing=up,open=true] function {
+    if entity @s[tag=!bps.open] if block ~ ~ ~ minecraft:barrel[facing=up,open=true] function on_open {
         tag @s add bps.open
         data merge block ~ ~ ~ {Lock:"§can't open this"}
         
@@ -21,11 +27,11 @@ if entity @s[tag=!bps.battling] function ${Reflection.getWritingFile().resolve("
         
     }
     
-    if entity @s[tag=bps.open] function {
+    if entity @s[tag=bps.open] function while_open {
         eval tablePages.generatePageControls()
     }
     
-    if entity @s[tag=bps.open] if block ~ ~ ~ minecraft:barrel[facing=up,open=false] function {
+    if entity @s[tag=bps.open] if block ~ ~ ~ minecraft:barrel[facing=up,open=false] function on_close {
         eval tablePages.callOnExit()
         
         tag @s remove bps.open
@@ -39,7 +45,7 @@ if entity @s[tag=!bps.battling] function ${Reflection.getWritingFile().resolve("
     }
 }
 
-if entity @s[tag=bps.battling] function ${Reflection.getWritingFile().resolve("battle")} {
+if entity @s[tag=bps.battling] function battle {
     unless block ~ ~ ~ minecraft:barrier function {
         kill @s
         

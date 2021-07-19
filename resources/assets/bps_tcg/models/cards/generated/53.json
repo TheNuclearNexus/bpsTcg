@@ -1,5 +1,5 @@
 {
-    "parent": "bps_tcg:cards/blank_undead",
+    "parent": "bps_tcg:cards/blank_terrestrial",
     "textures": {
         "image": "bps_tcg:cards/generated/53"
     }

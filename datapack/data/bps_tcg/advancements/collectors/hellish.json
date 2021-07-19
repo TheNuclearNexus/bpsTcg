@@ -1,0 +1,21 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:lava_bucket"
+    },
+    "title": {
+        "translate": "bps_tcg.advancements.hellish"
+    },
+    "description": {
+        "translate": "bps_tcg.advancements.hellish.desc"
+    },
+    "frame": "goal",
+    "hidden": false
+  },
+  "criteria": {
+  },
+    "rewards":{
+        "function":"bps_tcg:cards/grant_h"
+    },
+    "parent":"bps_tcg:collectors/fever"
+}

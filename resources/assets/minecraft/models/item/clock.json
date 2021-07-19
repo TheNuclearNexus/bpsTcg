@@ -394,9 +394,24 @@
             },
             "model": "item/clock"
         },
-        {"predicate": {"custom_model_data": 4258995},"model": "bps_tcg:cards/quit"},
-        {"predicate": {"custom_model_data": 4258996},"model": "bps_tcg:cards/cancel"},
-        {"predicate": {"custom_model_data": 4258997},"model": "bps_tcg:cards/done"},
+        {
+            "predicate": {
+                "custom_model_data": 4258996
+            },
+            "model": "bps_tcg:cards/quit"
+        },
+        {
+            "predicate": {
+                "custom_model_data": 4258996
+            },
+            "model": "bps_tcg:cards/cancel"
+        },
+        {
+            "predicate": {
+                "custom_model_data": 4258997
+            },
+            "model": "bps_tcg:cards/done"
+        },
         {
             "predicate": {
                 "custom_model_data": 4258998
@@ -738,6 +753,24 @@
                 "custom_model_data": 4259055
             },
             "model": "bps_tcg:cards/generated/55"
+        },
+        {
+            "predicate": {
+                "custom_model_data": 4259056
+            },
+            "model": "bps_tcg:cards/generated/56"
+        },
+        {
+            "predicate": {
+                "custom_model_data": 4259057
+            },
+            "model": "bps_tcg:cards/generated/57"
+        },
+        {
+            "predicate": {
+                "custom_model_data": 4259058
+            },
+            "model": "bps_tcg:cards/generated/58"
         }
     ]
 }

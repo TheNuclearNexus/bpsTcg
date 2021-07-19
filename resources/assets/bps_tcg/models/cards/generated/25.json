@@ -1,5 +1,5 @@
 {
-    "parent": "bps_tcg:cards/blank_undead",
+    "parent": "bps_tcg:cards/blank_ender",
     "textures": {
         "image": "bps_tcg:cards/generated/25"
     }

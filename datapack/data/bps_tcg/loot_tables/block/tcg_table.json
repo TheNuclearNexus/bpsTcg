@@ -1,0 +1,19 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:furnace",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{BlockEntityTag:{Items:[{id:\"minecraft:stone\",Count:1b,tag:{bps_tcg:{table:1b}}}]},CustomModelData:4258998,display:{Name:'{\"translate\":\"bps_tcg.table\",\"italic\":false}'}}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

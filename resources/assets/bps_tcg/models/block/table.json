@@ -1,10 +1,10 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "bps_tcg:block/bottom",
-		"1": "bps_tcg:block/side",
-		"2": "bps_tcg:block/top",
-		"particle": "bps_tcg:block/bottom"
+		"0": "bps_tcg:block/table/bottom",
+		"1": "bps_tcg:block/table/side",
+		"2": "bps_tcg:block/table/top",
+		"particle": "bps_tcg:block/table/bottom"
 	},
 	"elements": [
 		{

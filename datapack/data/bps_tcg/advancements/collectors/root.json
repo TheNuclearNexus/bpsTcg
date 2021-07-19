@@ -1,0 +1,35 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:clock",
+      "nbt": "{CustomModelData:4258998}"
+    },
+    "title": {
+        "translate": "bps_tcg.advancements.start"
+    },
+    "description": {
+        "translate": "bps_tcg.advancements.start.desc",
+        "with":[
+            {"translate":"bps_tcg.table"}
+        ]
+    },
+    "background": "bps_tcg:textures/block/table/advancement.png",
+    "frame": "task",
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:furnace"
+            ],
+            "nbt": "{CustomModelData:4258998}"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -9,3 +9,5 @@ define objective bps.id
 define objective bps.open_time
 
 define objective bps.sneak minecraft.custom:minecraft.sneak_time
+define objective bps.coas minecraft.used:minecraft.carrot_on_a_stick
+define objective bps.update_cards trigger
